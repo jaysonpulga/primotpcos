@@ -1,0 +1,15 @@
+.displaynone{
+    display: none;
+}
+/*div.dataTables_filter {
+    text-align: right;
+}
+
+div.dataTables_paginate.paging_simple_numbers {
+    text-align: right;
+}*/
+
+.webgrid-table-hidden
+{
+    display: none;
+}

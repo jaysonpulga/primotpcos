@@ -1,0 +1,16 @@
+RewriteEngine On
+
+### TEMPLATE RENAMING FOLDER NAME
+RewriteRule ^fa/(.*) /template/fontawesome/$1 [NC,L]
+RewriteRule ^font/(.*) /template/fonts/$1 [NC,L]
+RewriteRule ^img/(.*) /template/image/$1 [NC,L]
+RewriteRule ^js/(.*) /template/javascript/$1 [NC,L]
+RewriteRule ^css/(.*) /template/style/$1 [NC,L]
+
+## UPLOAD
+RewriteRule ^files/(.*) /upload/$1 [NC,L]
+
+## REMOVE index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php/$1 [L] 
