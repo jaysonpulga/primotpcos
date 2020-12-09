@@ -13,8 +13,51 @@ class Login_model extends CI_Model {
 		$this->WMSIdeagenDB = $this->load->database('WMSIdeagenDB', TRUE);
 	}
 	
+
+	public function GenerateAccessKey($username,$password){
+		
+		$postdata = http_build_query(
+            array(
+                'apiKey'    => APIKEY,
+                'config'    => CONFIG,
+                'userName'  => $username,
+                'password'  => $password,
+            )
+        );
+        $opts = STREAM_CONTEXT;
+        $opts['http']['content'] = $postdata;
+        $result = file_get_contents(WMS_URL.'GenerateAccessKey2', false, stream_context_create($opts));
+        return $result;t_contents(WMS_URL.'GenerateAccessKey2', false, stream_context_create($opts));
+		return $result;
+       
+	}
+
+	
+	
 	public function ChecktoLogin($username,$password)
 	{
+		
+		/*
+		$APIResult = $this->GenerateAccessKey($username, $password);
+        $data = json_decode($APIResult, true);
+		
+		//if access denied
+		 if (array_key_exists('error', $data)) {
+			 $this->session->set_flashdata('error', $data['error']);  
+             redirect(base_url().'login'); 
+			 exit;
+		}
+		
+		//if access granted 
+		if (array_key_exists('userkey', $data)) { 
+			
+			print_r($data);
+			exit;
+		
+		}
+		*/ 
+		
+		
 		
 		/*
 		$sql="SELECT * FROM primo_view_Jobs Where ProcessCode='ENRICHMENT' AND statusstring in('Allocated','Pending','Ongoing')  AND AssignedTo='$username'";	
