@@ -370,3 +370,8 @@ div.FixedHeader_Cloned table {
 	margin: 0 !important
 }
 
+//add color for checked tr
+.addcolor {
+    background-color: #f8fb4699 !important;
+}
+

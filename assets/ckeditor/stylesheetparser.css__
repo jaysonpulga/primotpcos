@@ -1,0 +1,30 @@
+/*
+Copyright (c) 2003-2018, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see license.html or https://sdk.ckeditor.com/license.html.
+*/
+
+body
+{
+	font-family: Arial, Verdana, sans-serif;
+	font-size: 12px;
+	color: #222;
+	background-color: #fff;
+}
+
+
+span.subject_area { background-color: yellow; }
+span.note { background-color: lime; }
+span.court { background-color: lightBlue; }
+span.case_name { background-color: LIGHTSALMON; }
+span.docket_number { background-color: HOTPINK; }
+span.date_submitted { background-color: PALEGOLDENROD; }
+span.date_decided { background-color: LAVENDER; }
+span.prior_history { background-color: THISTLE; }
+span.counsel { background-color: CHARTREUSE; }
+span.judge { background-color: YELLOWGREEN; }
+span.section { background-color: DARKSEAGREEN; }
+span.reference { background-color: violet}
+span.above95 { background-color: green; }
+span.above80 { background-color: red; }
+span.below79 { background-color: orange; }
+span.edited { background-color: blue; }

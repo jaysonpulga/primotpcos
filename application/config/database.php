@@ -98,17 +98,11 @@ $db['default'] = array(
 
 
 $db['SearchnetIdeagenDB'] = array(
-	'dsn'	=> '',
-	'hostname' => 'Driver={SQL Server};Server=10.200.0.13\SVRSGPEDGSQL01,58483;Database=SearchnetV5_TPCOS;',
-	'username' => 'edg',
-	'password' => 'engg@1234',
-	'database' => 'SearchnetV5_TPCOS',
-	
-	// 'dsn'	=> 'Driver={SQL Server};Server=DESKTOP-93PEQV8\SQLEXPRESS;Database=SearchnetV5_IDEAGEN;',
-	// 'hostname' => '',
-	// 'username' => '',
-	// 'password' => '',
-	// 'database' => 'SearchnetV5_IDEAGEN',
+	'dsn'	=> 'Driver={SQL Server};Server=DESKTOP-93PEQV8\SQLEXPRESS;Database=SearchnetV5_IDEAGEN;',
+	'hostname' => '',
+	'username' => '',
+	'password' => '',
+	'database' => 'SearchnetV5_IDEAGEN',
 	'dbdriver' => 'odbc',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
@@ -127,18 +121,11 @@ $db['SearchnetIdeagenDB'] = array(
 
 
 $db['WMSIdeagenDB'] = array(
-	'dsn'	=> '',
-	'hostname' => 'Driver={SQL Server};Server=10.200.0.13\SVRSGPEDGSQL01,58483;Database=WMSDEV_PRIMO_TPCOS;',
-	'username' => 'edg',
-	'password' => 'engg@1234',
-	'database' => 'WMSDEV_PRIMO_TPCOS',
-
-	// 'dsn'	=> 'Driver={SQL Server};Server=DESKTOP-93PEQV8\SQLEXPRESS;Database=WMSDEV_PRIMO_Ideagen;',
-	// 'hostname' => '',
-	// 'username' => '',
-	// 'password' => '',
-	// 'database' => 'WMSDEV_PRIMO_Ideagen',
-
+	'dsn'	=> 'Driver={SQL Server};Server=DESKTOP-93PEQV8\SQLEXPRESS;Database=WMSDEV_PRIMO_Ideagen;',
+	'hostname' => '',
+	'username' => '',
+	'password' => '',
+	'database' => 'WMSDEV_PRIMO_Ideagen',
 	'dbdriver' => 'odbc',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
