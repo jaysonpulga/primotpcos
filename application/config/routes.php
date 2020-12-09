@@ -55,8 +55,23 @@ $route['signin'] = 'login/signin';
 $route['signout'] = 'logout/signout';
 
 
+//Main Dashboard
+$route['dashboard'] = 'DashboardController';
 
-$route['dashboard'] = 'main';
+
+//Acquire Menu
+$route['precoding'] = 'PrecodingController';
+$route['fullscreen/(:num)'] = 'PrecodingController/fullscreen/$1';
+$route['forApproval'] = 'ForApprovalController';
+$route['batching'] = 'BatchingController';
+$route['registration'] = 'RegistrationController';
+
+
+//Settings Menu
+$route['DataEntrySettings'] = 'DataEntrySettingsController';
+$route['EditorSettings'] = 'EditorSettingsController';
+
+
 
 
 $route['404_override'] = '';

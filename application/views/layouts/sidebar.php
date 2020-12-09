@@ -23,9 +23,10 @@
             </span>
           </a>
           <ul class="treeview-menu" style="">
-             <li class="active"><a href="NewContent.php?page=Acquire"><i class="fa fa-circle-o"></i>New content <small class="label pull-right bg-green"><span class="newcontent">0</span></small></a></li>
-              <li class="active"><a href="NotRelevant.php?page=Acquire"><i class="fa fa-question"></i>Not Relevant<small class="label pull-right bg-green"><span class="notrelevant">0</span></small></a></li>
-              <li class="active"><a href="Registration.php?page=Acquire"><i class="fa fa-file"></i>Registration</a></li>
+             <li class="active"><a href="precoding"><i class="fa fa-circle-o"></i>Precoding <small class="label pull-right bg-green"><span class="precoding">0</span></small></a></li>
+			 <li class="active"><a href="forApproval"><i class="fa fa-question"></i>For Approval <small class="label pull-right bg-green"><span class="precoding">0</span></small></a></li>
+              <li class="active"><a href="batching"><i class="fa fa-file"></i>Batching<small class="label pull-right bg-green"><span class="batching">0</span></small></a></li>
+              <li class="active"><a href="registration"><i class="fa fa-file"></i>Registration</a></li>
           </ul>
         </li>
        <li class="treeview">
@@ -112,6 +113,28 @@
           </ul>
         </li>
 		<li class="header">SETTINGS</li>
+		
+		<li class="treeview">
+          <a href="#">
+             <i class="fa f fa-table"></i><span>Data Entry Settings</span>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="DataEntrySettings"><i class="fa fa-cog"></i> Configure</a></li>
+          </ul>
+		</li>
+		
+		<li class="treeview menu-open">
+          <a href="#">
+             <i class="fa fa-edit"></i>
+            <span>Editor Settings</span>
+            
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="EditorSettings"><i class="fa fa-cog"></i> Configure</a></li>
+          </ul>
+        </li>
+		
+		
 		<li class="header">REPORTS</li>
 		<li class="treeview">
           <a href="#">

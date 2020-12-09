@@ -5,6 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="icon" href="innodata.png">
   <title>Log in</title>
+  <link rel="icon" href="<?php echo base_url(); ?>assets/innodata.png">
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.6 -->  

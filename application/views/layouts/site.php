@@ -4,7 +4,8 @@
 
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Dashboard</title>
+  <title>Primotpcos</title>
+  <link rel="icon" href="<?php echo base_url(); ?>assets/innodata.png">
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.6 -->
@@ -19,6 +20,9 @@
 	   folder instead of downloading all of them to reduce the load. -->
   <link rel="stylesheet" href="assets/adminlte/dist/css/skins/_all-skins.min.css">
   
+   <!-- DataTables -->
+  <link rel="stylesheet" href="assets/adminlte/plugins/datatables/dataTables.bootstrap.css">
+  
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
   <!--[if lt IE 9]>
@@ -30,8 +34,16 @@
    <script src="assets/adminlte/plugins/jQuery/jquery-2.2.3.min.js"></script>
    <!-- jQuery UI 1.11.4 -->
    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-   <!-- Bootstrap 3.3.6 -->
+   <!	-- Bootstrap 3.3.6 -->
    <script src="assets/adminlte/bootstrap/js/bootstrap.min.js"></script>
+   
+   	<!-- Waitme -->
+	<link rel="stylesheet" href="<?php echo base_url(); ?>assets/waitme/waitMe.css">
+	<script src="<?php echo base_url(); ?>assets/waitme/waitMe.min.js" ></script>
+	
+	<!-- sweet Alert -->
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.6.5/sweetalert2.css" rel="stylesheet" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.6.5/sweetalert2.js"></script>
   
 	
 </head>

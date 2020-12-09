@@ -48,6 +48,29 @@ defined('FOPEN_READ_WRITE_CREATE')              OR define('FOPEN_READ_WRITE_CREA
 defined('FOPEN_WRITE_CREATE_STRICT')            OR define('FOPEN_WRITE_CREATE_STRICT', 'xb');
 defined('FOPEN_READ_WRITE_CREATE_STRICT')       OR define('FOPEN_READ_WRITE_CREATE_STRICT', 'x+b');
 
+defined('APIKEY')          						OR define('APIKEY', 'Thequickbrownfoxjumpsoverthelazyd0g');
+defined('CONFIG')                               OR define('CONFIG', '024');
+defined('WMS_URL') 								OR define('WMS_URL', 'https://52.220.114.60/WMS.Services/WMS.Services.asmx/');
+
+
+defined('STREAM_CONTEXT') OR define('STREAM_CONTEXT', 
+	
+	array(
+	
+		'ssl' => array(
+			'verify_peer' => false,
+			'verify_peer_name' => false,
+			'allow_self_signed' => true ),
+			
+		'http'  => array(
+			'method'  => 'POST',
+			'header'  => 'Content-Type: application/x-www-form-urlencoded')
+	)
+
+);
+
+
+
 /*
 |--------------------------------------------------------------------------
 | Exit Status Codes
