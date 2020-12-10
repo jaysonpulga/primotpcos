@@ -75,84 +75,67 @@
 	});
 	
 	
+	$(document).on('click', '.saveHTMLFormData', function(){
+		var RefIdStatus = $("#RefIdStatus").val();
+		var answerlist = [];
+		$(".form_answer").each(function() {
+			if($(this).data('fieldtype') == "dropdown" ) 
+			{
+			}
+			else
+			{
+				answerlist.push({
+					'answer': $(this).val(),
+					'fieldname':$(this).attr('name'),
+					'fieldtype':$(this).data('fieldtype'),
+					'fieldcaption':$(this).data('fieldcaption'),
+				});
+			}
 
-	
-	
-	// submit form
-	$("#mlform").on("submit", submitAnswer); 
-	
-	function submitAnswer(event){
-		
-			event.preventDefault();
-			var RefIdStatus = $("#RefIdStatus").val();
-			var answerlist = [];
-			
-			 $(".form_answer").each(function() {
+		});
 			 
-				if($(this).data('fieldtype') == "dropdown" ) 
-				{
-
-			
-				}
-				else
-				{
-
-					answerlist.push({
-							  'answer': $(this).val(),
-							  'fieldname':$(this).attr('name'),
-							  'fieldtype':$(this).data('fieldtype'),
-							  'fieldcaption':$(this).data('fieldcaption'),
-					});
-
-				}
-
-			 });
-			 
- 
-			$.ajax({
-					url: baseUrl+'PrecodingController/saveFormData',
-					data : {answerlist:answerlist,RefId:RefId,RefIdStatus:RefIdStatus},
-					type : 'POST',
-					beforeSend:function(){
-						
-						$("body").waitMe({
-							effect: 'timer',
-							text: 'Saving  Details ........ ',
-							bg: 'rgba(255,255,255,0.90)',
-							color: '#555'
-						});
-						
-					},
-					success:function(data){
-						
-						$('body').waitMe('hide');
-						
-						if(data == 'done'){
-							swal({
-								type:'success',
-								title:"Data Saved!",
-								text:""
-							}).then(function(){
-								
-								window.location.replace(baseUrl+"precoding");
-							});
-						}
+ 		var htmlsource = CKEDITOR.instances['editorForm'].getData();
+ 		var Filename = $('#Filename').val();
+		$.ajax({
+			url: baseUrl+'PrecodingController/saveFormData',
+			data : {answerlist:answerlist,RefId:RefId,RefIdStatus:RefIdStatus, htmlsource:htmlsource, Filename:Filename},
+			type : 'POST',
+			beforeSend:function(){
+				$("body").waitMe({
+					effect: 'timer',
+					text: 'Saving  Details ........ ',
+					bg: 'rgba(255,255,255,0.90)',
+					color: '#555'
+				});
+			},
+			success:function(data){
 				
+				$('body').waitMe('hide');
+				
+				if(data == 'done'){
+					swal({
+						type:'success',
+						title:"Data Saved!",
+						text:""
+					}).then(function(){
+						
+						window.location.replace(baseUrl+"precoding");
+					});
+				}
+			},
+			error:function(){
+				$('body').waitMe('hide');
 					
-					},
-					error:function(){
-						$('body').waitMe('hide');
-							
-						swal({
-							type:'error',
-							title:"Oops..",
-							text:"Internal error "
-						})
+				swal({
+					type:'error',
+					title:"Oops..",
+					text:"Internal error "
+				})
+			}
+		});
+	})
+	
 
-					}
-					
-			});
-		}
 		
 		
 		// load Styling

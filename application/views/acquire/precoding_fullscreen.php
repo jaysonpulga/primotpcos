@@ -159,9 +159,10 @@
 <div class="ui-layout-west"> 
 	<div class="ui-layout-content">
 		<div>
-				<div id="editorForm">
-				 <?php echo  @$htmlfile_source  ?>
-				</div>
+
+			<div id="editorForm">
+			 	<?php echo  @$htmlfile_source  ?>
+			</div>
 		</div>
 	</div>	
 </div>
@@ -188,7 +189,10 @@
 						<li> ConfigName: <u><span id='JobID'><?php echo @$dataresult->ConfigName ?></span></u> </li>
 						<li> Jurisdiction:  <u><span id='JobID'><?php echo @$dataresult->Jurisdiction ?></span></u> </li>
 						<li> Title:  <u><span id='JobID'><?php echo @$dataresult->Title ?></span></u></li>
-						<li> File name:  <u><span id='filename'><?php echo @$dataresult->Filename ?></span></u> </li>		
+						<li> 
+							File name:  <u><span id='filename'><?php echo @$dataresult->Filename ?></span></u>
+							<input type="hidden" name="Filename" id="Filename" value="<?php echo pathinfo($dataresult->Filename, PATHINFO_FILENAME); ?>">
+						</li>		
 						<li>Date Registered:  <u><?php echo @$dataresult->DateRegistered ?></u></li>
 						<li>Status:  <u><?php echo @$dataresult->Status ?></u></li>
 					</ul>
@@ -198,7 +202,7 @@
 						  <?php  if(@$dataresult->Status != "for Approval"){ ?>
 						 
 							<li id="SaveButton"> 
-								<button  type="submit" form="mlform"  class="btn btn-primary  pull-right saveHTMLFormData" style="width:150px"><i class="fa fa-save"></i> Save</button>
+								<button  type="button" class="btn btn-primary  pull-right saveHTMLFormData" style="width:150px"><i class="fa fa-save"></i> Save</button>
 							</li>
 							
 						<?php } ?>

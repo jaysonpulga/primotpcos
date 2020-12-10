@@ -147,16 +147,11 @@ class PrecodingController extends CI_Controller
 	
 	public function fullscreen($RefId)
 	{
-		
 		//$this->convertPDFToHTML();
 
-		
 		//load dataentry model and get loaddDataentry html form 
 		$loaddDataEntry = $this->DataEntrySettings_model->loaddDataEntry();
 		
-		//call loadhtmlfile into ckeditot
-		
-
 		//query the RefID details
 		$strSQL = "SELECT * From  primo_view_Integration WHERE IsNull(Relevancy,'')='' AND RefId ='".$RefId."' ";
 		$query = $this->WMSIdeagenDB->query($strSQL);
@@ -165,15 +160,15 @@ class PrecodingController extends CI_Controller
 		// print_r($result);
 		// echo"</pre>";
 		// die();
+		//call loadhtmlfile into ckeditor
 		$htmlfile = $this->loadhtmlfilein_ckeditor($result->RefId, $result->Filename);
 		
 		$data = array(
-					'dataresult' => $result,
-					'RefId' => $RefId,
-					'dataEntryFormTemplate' => $loaddDataEntry,
-					'htmlfile_source' => $htmlfile);
-		
-		
+			'dataresult' => $result,
+			'RefId' => $RefId,
+			'dataEntryFormTemplate' => $loaddDataEntry,
+			'htmlfile_source' => $htmlfile
+		);
 		$this->load->view('acquire/precoding_fullscreen',$data);
 		
 	}
@@ -230,26 +225,23 @@ class PrecodingController extends CI_Controller
 			$pdfname = $path_parts['filename'];
 			$pp = $_SERVER{'DOCUMENT_ROOT'}."/primotpcos/uploadfiles/".$RefId."/".$pdfname.".pdf";
 			if(file_exists($pp )){
-			    $this->convertPDFToHTML($RefId, $filename);
+			    $this->convertPDFToHTML($RefId, $Filename);
 			    $this->loadhtmlfilein_ckeditor($RefId, $Filename);
 			}
-			
-			
 		}
-		
-
 	}
-
 	
 	public function saveFormData()
 	{
-		
+		// echo"<pre>";
+		// print_r($_POST);
+		// echo"</pre>";
+		// die();
 		$answerlist = $this->input->post('answerlist'); 
 		$RefId = $this->input->post('RefId'); 
 		$UserID = $this->session->userdata('UserID');
 		$RefIdStatus = $this->input->post('RefIdStatus');
-		
-
+		$Filename = $this->input->post('Filename');
 
 		if(!empty($answerlist))
 		{
@@ -257,32 +249,33 @@ class PrecodingController extends CI_Controller
 			$query = $this->WMSIdeagenDB->query($strSQLDelete);
 		}
 		
-		
-
 		// insert  tbldataentry_forms 
 		foreach($answerlist as $data_ans){
-			
-			
-			 
 			if(!empty($data_ans['answer'])){
 									
 					$strSQL = "INSERT INTO tbldataentry_forms (Refid,FieldName,FieldType,Answer,UserId,FieldCaption) VALUES ('".$RefId."','".$data_ans['fieldname']."','".$data_ans['fieldtype']."','".$data_ans['answer']."','".$UserID."','".$data_ans['fieldcaption']."')";
 					$query = $this->WMSIdeagenDB->query($strSQL);
 			}
-			
-			
 		}
-		
-		
-		
 		//update table if status is New
 		if($RefIdStatus  == "NEW" ||$RefIdStatus  == "New"  )
 		{
 			$strSQL = "UPDATE PRIMO_Integration SET Status ='for Approval'  where RefId = '".$RefId."' ";
 			$query = $this->WMSIdeagenDB->query($strSQL);
 		}
-		
-		
+
+		$directory = 'uploadfiles/'.$RefId;
+		if (!file_exists($directory)) {
+		    mkdir($directory, 0777, true);
+		}
+		$htmlsource = $this->input->post('htmlsource');
+		$tempDir = $directory."/".$Filename.".html";
+		$tempFile = fopen($tempDir, "w") or die("Unable to open file!");
+		fclose($tempFile);
+		chmod($tempDir, 0777); 
+		file_put_contents($tempDir, $htmlsource);
+
+
 		echo "done";
 
 	
