@@ -31,7 +31,7 @@
 									<i class="fa fa-fw fa-pencil"></i> Update
 								</a>	
 								
-								<a href="javascript:void(0)" type="button" class="btn btn-success  btn-flat btnexportexcel disabled">
+								<a  target="_blank" href="<?= base_url();?>ForApprovalController/ExportToExcel"  type="button" class="btn btn-success  btn-flat">
 									<span class="glyphicon glyphicon-export"></span> Export to Excel
 								</a>	
 								
@@ -53,7 +53,6 @@
 					  <th>RefID</th>
 					  <th>Update Status?</th>
 					  <th>MetaData Info.</th>
-					  <th>Configname</th>
 					  <th>Jurisdiction</th>
 					  <th>Status</th>
 					  <th>Title</th>
@@ -187,7 +186,6 @@ function loadTable(){
 		},
 		
 		{'data': 'meta_data'},
-		{'data': 'ConfigName'},
 		{'data': 'Jurisdiction'},
 		{'data': 'Status'},
 		{'data': 'Title'},
@@ -233,7 +231,6 @@ $('#mainDatatables').on('change', 'input[name="parent_checkbox"]', function() {
 	  $(this).closest('tr').find('td select.seleclValue').removeAttr('disabled');
 	  
 	   $(".btnupdateStatus").removeClass('disabled');
-	   $(".btnexportexcel").removeClass('disabled');
 	  
     }
 	else
@@ -242,8 +239,7 @@ $('#mainDatatables').on('change', 'input[name="parent_checkbox"]', function() {
 		$(this).closest("tr").removeClass('addcolor');
 		$(this).closest('tr').find('td select.seleclValue').attr("disabled", true);	
 
-		$(".btnupdateStatus").addClass('disabled');
-	    $(".btnexportexcel").addClass('disabled');		
+		$(".btnupdateStatus").addClass('disabled');	
 		
 		
 	}
@@ -326,26 +322,6 @@ e.preventDefault();
 </script>
 
 
-<!--- ////   EXPORT EXCEL  /////////// -->
- <script type="text/javascript">
-$(document).on('click', '.btnexportexcel', function(e){
-e.preventDefault();
-
- $.each($("input[name='parent_checkbox']:checked"), function(){
-		RefId = $(this).val();
-});
-		
-$("#RefId_value").val(RefId);
-
-$( "#target" ).submit();
-
-
-});
-</script>
-
-<form id="target" target="_blank" action="<?= base_url();?>ForApprovalController/ExportToExcel" method="POST">
-	<input type="hidden"  id="RefId_value" name="RefId_value" />
-</form>
 
 
 <!--- ////   IMPORT EXCEL  /////////// -->

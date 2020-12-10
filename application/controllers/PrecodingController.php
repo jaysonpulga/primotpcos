@@ -242,6 +242,8 @@ class PrecodingController extends CI_Controller
 		$RefId = $this->input->post('RefId'); 
 		$UserID = $this->session->userdata('UserID');
 		$RefIdStatus = $this->input->post('RefIdStatus');
+		
+
 
 		if(!empty($answerlist))
 		{
@@ -258,7 +260,7 @@ class PrecodingController extends CI_Controller
 			 
 			if(!empty($data_ans['answer'])){
 									
-					$strSQL = "INSERT INTO tbldataentry_forms (Refid,FieldName,FieldType,Answer,UserId) VALUES ('".$RefId."','".$data_ans['fieldname']."','".$data_ans['fieldtype']."','".$data_ans['answer']."','".$UserID."')";
+					$strSQL = "INSERT INTO tbldataentry_forms (Refid,FieldName,FieldType,Answer,UserId,FieldCaption) VALUES ('".$RefId."','".$data_ans['fieldname']."','".$data_ans['fieldtype']."','".$data_ans['answer']."','".$UserID."','".$data_ans['fieldcaption']."')";
 					$query = $this->WMSIdeagenDB->query($strSQL);
 			}
 			
@@ -268,11 +270,12 @@ class PrecodingController extends CI_Controller
 		
 		
 		//update table if status is New
-		if($RefIdStatus  == "NEW")
+		if($RefIdStatus  == "NEW" ||$RefIdStatus  == "New"  )
 		{
 			$strSQL = "UPDATE PRIMO_Integration SET Status ='for Approval'  where RefId = '".$RefId."' ";
 			$query = $this->WMSIdeagenDB->query($strSQL);
 		}
+		
 		
 		echo "done";
 
