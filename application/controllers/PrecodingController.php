@@ -203,16 +203,13 @@ class PrecodingController extends CI_Controller
 		exec($cmd, $out, $ret);
 		
 		exit;
-		
-		
 	}
 
 	
 	public function loadhtmlfilein_ckeditor($RefId, $Filename)
 	{
 		$pp = $_SERVER{'DOCUMENT_ROOT'}."/primotpcos/uploadfiles/".$RefId."/".$Filename;
-
-		if(file_exists($pp )){
+		if(file_exists($pp)){
 		    $sFile= file_get_contents($pp);
 		   	$encoding = mb_detect_encoding($sFile, mb_detect_order(), false);
 		    if($encoding == "UTF-8"){
@@ -224,7 +221,7 @@ class PrecodingController extends CI_Controller
 			$path_parts = pathinfo($pp);
 			$pdfname = $path_parts['filename'];
 			$pp = $_SERVER{'DOCUMENT_ROOT'}."/primotpcos/uploadfiles/".$RefId."/".$pdfname.".pdf";
-			if(file_exists($pp )){
+			if(file_exists($pp)){
 			    $this->convertPDFToHTML($RefId, $Filename);
 			    $this->loadhtmlfilein_ckeditor($RefId, $Filename);
 			}
