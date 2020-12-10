@@ -35,7 +35,7 @@ class DataEntrySettings_model extends CI_Model {
 					  
 							$value .= '<div class="form-group">';
 							$value	.=	'<label >$field->FieldCaption</label><br>';
-							$value	.=	 '<select  class="form-control form_answer" name="'.$field->FieldName.'" id="'.$field->FieldName.'"  data-fieldtype="'.$field->FieldType.'"   >';
+							$value	.=	 '<select  class="form-control form_answer" name="'.$field->FieldName.'" id="'.$field->FieldName.'"  data-fieldtype="'.$field->FieldType.'" data-fieldcaption="'.$field->FieldCaption.'"   >';
 											$cats = explode("|",$field->FieldOption);
 												foreach($cats as $cat) {
 							$value .=	        '<option value="No">'.$cat.'</option>';
@@ -48,7 +48,7 @@ class DataEntrySettings_model extends CI_Model {
 									
 								$value .= '<div class="form-group">';
 								$value .= '<label >'.$field->FieldCaption.'</label><br>';
-								$value .= '<textarea class="form-control form_answer" id="'.$field->FieldName.'" name="'.$field->FieldName.'" rows="4" cols="50" data-fieldtype="'.$field->FieldType.'"  ></textarea>';
+								$value .= '<textarea class="form-control form_answer" id="'.$field->FieldName.'" name="'.$field->FieldName.'" rows="4" cols="50" data-fieldtype="'.$field->FieldType.'"  data-fieldcaption="'.$field->FieldCaption.'"  ></textarea>';
 								$value .= '</div>';
 						
 						break;
@@ -56,7 +56,7 @@ class DataEntrySettings_model extends CI_Model {
 					  default:
 								$value .= '<div class="form-group">';
 								$value .= '<label >'.$field->FieldCaption.'</label><br>';
-								$value .= '<input type="'.$field->FieldType.'" class="form-control form_answer" placeholder="'.$field->FieldCaption.'" name="'.$field->FieldName.'" id="'.$field->FieldName.'"  data-fieldtype="'.$field->FieldType.'"  >';
+								$value .= '<input type="'.$field->FieldType.'" class="form-control form_answer" placeholder="'.$field->FieldCaption.'" name="'.$field->FieldName.'" id="'.$field->FieldName.'"  data-fieldtype="'.$field->FieldType.'" data-fieldcaption="'.$field->FieldCaption.'"   >';
 								$value .= '</div>';
 					  
 					  

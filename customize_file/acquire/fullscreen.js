@@ -101,6 +101,7 @@
 							  'answer': $(this).val(),
 							  'fieldname':$(this).attr('name'),
 							  'fieldtype':$(this).data('fieldtype'),
+							  'fieldcaption':$(this).data('fieldcaption'),
 					});
 
 				}

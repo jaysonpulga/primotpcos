@@ -1,7 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-
 $active_group = 'default';
 $query_builder = TRUE;
 
@@ -29,10 +28,10 @@ $db['default'] = array(
 
 $db['WMSIdeagenDB'] = array(
 	'dsn'	=> '',
-	'hostname' => 'Driver={SQL Server};Server=10.200.0.13\SVRSGPEDGSQL01,58483;Database=WMSDEV_PRIMO_Ideagen;',
+	'hostname' => 'Driver={SQL Server};Server=10.200.0.13\SVRSGPEDGSQL01,58483;Database=WMSDEV_PRIMO_TPCOS;',
 	'username' => 'edg',
 	'password' => 'engg@1234',
-	'database' => 'WMSDEV_PRIMO_Ideagen',
+	'database' => 'WMSDEV_PRIMO_TPCOS',
 	'dbdriver' => 'odbc',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
@@ -48,8 +47,6 @@ $db['WMSIdeagenDB'] = array(
 	'failover' => array(),
 	'save_queries' => TRUE
 );
-
-
 
 $db['SearchnetIdeagenDB'] = array(
 	'dsn'	=> '',
@@ -72,9 +69,3 @@ $db['SearchnetIdeagenDB'] = array(
 	'failover' => array(),
 	'save_queries' => TRUE
 );
-
-
-
-
-
-

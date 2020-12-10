@@ -29,6 +29,100 @@ class BatchingController extends CI_Controller
 			$this->load->view('acquire/batching');
 	}
 	
+	
+	public function SetupColumn(){
+		
+		
+				   $RefId = "22268";
+		
+					$EntryForm = "SELECT * From  tbldataentry_forms WHERE  RefId= '".$RefId."' ";
+					$query = $this->WMSIdeagenDB->query($EntryForm);
+					$dataform = $query->result();
+					
+					//print_r($dataform);
+					 $dataArray = array();
+					 $dataArray2 = array();
+				
+					$metaDataFieldName = "";
+					$metaDataAnswer = "";
+					
+					if(!empty($dataform))
+					{
+						
+						
+						foreach($dataform as $key => $metaifo)
+						{
+							
+							
+							
+							if($metaifo->FieldName)
+							{
+								$dataArray[] = $metaifo->FieldName;
+								
+								$metaDataFieldName .= "<td>".$metaifo->FieldName."</td>";
+							}
+							
+							if($metaifo->Answer)
+							{
+								$dataArray2[] = $metaifo->Answer;
+								
+								$metaDataAnswer  .= "<td>".$metaifo->Answer."</td>";
+							}
+							
+							
+							/*
+							if($metaifo->FieldName)
+							{
+								$dataArray[] = $metaifo;
+							} 
+							 */
+
+							 
+							  /*
+								foreach($metaifo as $key2 => $val)
+								{
+										$dataArray[$key2][] = $val;
+								}
+								*/
+						
+							
+							/*$metaData .="<table border=1 >";
+							
+										if($metaifo->FieldName)
+										{
+											
+										}
+							
+												<tr>
+													<td>".$metaifo->FieldName."</td>
+													<td>:</td>
+													<td>".$metaifo->Answer."</td>
+												</tr>
+						    $metaData .="</table>";
+							*/
+							
+						
+						}
+					}
+					
+					
+					print_r($dataArray);
+					print_r($dataArray2);
+					
+					echo "<table border='1'>";
+					
+						echo "<tr>";
+						echo $metaDataFieldName;
+						echo "</tr>";
+						
+						echo "<tr>";
+						echo $metaDataAnswer;
+						echo "</tr>";
+						
+						
+					echo "</table>";
+	}
+	
 	public function GetDataBatching(){
 		
 		
@@ -41,7 +135,7 @@ class BatchingController extends CI_Controller
 			$post = $query->result();
 			
 			$data = array();
-			$metaData = "";
+			
 			if(!empty($post))
 			{
 							
@@ -52,29 +146,61 @@ class BatchingController extends CI_Controller
 					$query = $this->WMSIdeagenDB->query($EntryForm);
 					$dataform = $query->result();
 					
+					$metaData = "";
+					$SGML_filename = "";
+					
+					
+					$metaDataFieldName = "";
+					$metaDataAnswer = "";
+					$metaDataTable = "";
 					if(!empty($dataform))
 					{
 						foreach($dataform as $metaifo)
 						{
-							$metaData .= "<table >
-										  <tr>
-										    <td>".$metaifo->FieldName."</td>
-											<td>:</td>
-										    <td>".$metaifo->Answer."</td>
-										  </tr>
-										</table>";
+							
+							if($metaifo->FieldName == "Sgml")
+							{
+								$SGML_filename = $metaifo->Answer;
+								
+							}
+							
+							if($metaifo->FieldCaption)
+							{
+								$metaDataFieldName .= "<td><center><b>".$metaifo->FieldCaption."</b></center></td>";
+							}
+							
+							if($metaifo->Answer)
+							{								
+								$metaDataAnswer  .= "<td>".$metaifo->Answer."</td>";
+							}
 						
 						}
+						
+						$metaDataTable .= "<table border='1'>";
+						$metaDataTable .= "<tr>";
+						$metaDataTable .= $metaDataFieldName;
+						$metaDataTable .= "</tr>";
+						$metaDataTable .= "<tr>";
+						$metaDataTable .= $metaDataAnswer;
+						$metaDataTable .= "</tr>";
+						$metaDataTable .= "</table>";
 					}
 					
 					
+					$title = $this->functions_library->UTF8_encoding(@$dd->Title);
+					
+					if( strlen( $title ) > 25 ) {
+					   $title = substr( $title, 0, 25 ) . '...';
+					}
+					
 					$row = array();
 					$row['RefId'] = @$dd->RefId;
-					$row['meta_data'] = $metaData;
+					$row['meta_data'] = $metaDataTable;
+					$row['SGML_filename'] = $SGML_filename;
 					$row['ConfigName'] = @$dd->ConfigName;
 					$row['Jurisdiction'] = @$dd->Jurisdiction;
 					$row['Status'] 		= @$dd->Status;
-					$row['Title'] =  '<a href="fullscreen/'.@$dd->RefId.'" target="_blank">'.$this->functions_library->UTF8_encoding(@$dd->Title).'</a>'; 
+					$row['Title'] =  '<a href="fullscreen/'.@$dd->RefId.'" target="_blank">'.$title.'</a>'; 
 					$row['Filename'] = @$dd->Filename;
 					$row['DateRegistered'] = @$dd->DateRegistered;
 					

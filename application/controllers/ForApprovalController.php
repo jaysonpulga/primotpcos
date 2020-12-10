@@ -40,7 +40,7 @@ class ForApprovalController extends CI_Controller
 			$post = $query->result();
 			
 			$data = array();
-			$metaData = "";
+			
 			if(!empty($post))
 			{
 							
@@ -51,29 +51,59 @@ class ForApprovalController extends CI_Controller
 					$query = $this->WMSIdeagenDB->query($EntryForm);
 					$dataform = $query->result();
 					
+					$metaData = "";
+					$SGML_filename = "";
+					
+					
+					$metaDataFieldName = "";
+					$metaDataAnswer = "";
+					$metaDataTable = "";
 					if(!empty($dataform))
 					{
 						foreach($dataform as $metaifo)
 						{
-							$metaData .= "<table >
-										  <tr>
-										    <td>".$metaifo->FieldName."</td>
-											<td>:</td>
-										    <td>".$metaifo->Answer."</td>
-										  </tr>
-										</table>";
+							
+							if($metaifo->FieldName == "Sgml")
+							{
+								$SGML_filename = $metaifo->Answer;
+								
+							}
+							
+							if($metaifo->FieldCaption)
+							{
+								$metaDataFieldName .= "<td><b>".$metaifo->FieldCaption."</b></td>";
+							}
+							
+							if($metaifo->Answer)
+							{								
+								$metaDataAnswer  .= "<td>".$metaifo->Answer."</td>";
+							}
 						
 						}
+						
+						$metaDataTable .= "<table border='1'>";
+						$metaDataTable .= "<tr>";
+						$metaDataTable .= $metaDataFieldName;
+						$metaDataTable .= "</tr>";
+						$metaDataTable .= "<tr>";
+						$metaDataTable .= $metaDataAnswer;
+						$metaDataTable .= "</tr>";
+						$metaDataTable .= "</table>";
 					}
 					
+					$title = $this->functions_library->UTF8_encoding(@$dd->Title);
+					
+					if( strlen( $title ) > 25 ) {
+					   $title = substr( $title, 0, 25 ) . '...';
+					}
 					
 					$row = array();
 					$row['RefId'] = @$dd->RefId;
-					$row['meta_data'] = $metaData;
+					$row['meta_data'] = $metaDataTable;
 					$row['ConfigName'] = @$dd->ConfigName;
 					$row['Jurisdiction'] = @$dd->Jurisdiction;
 					$row['Status'] 		= @$dd->Status;
-					$row['Title'] =  '<a href="fullscreen/'.@$dd->RefId.'" target="_blank">'.$this->functions_library->UTF8_encoding(@$dd->Title).'</a>'; 
+					$row['Title'] =  '<a href="fullscreen/'.@$dd->RefId.'" target="_blank">'.$title.'</a>'; 
 					$row['Filename'] = @$dd->Filename;
 					$row['DateRegistered'] = @$dd->DateRegistered;
 					
@@ -113,10 +143,8 @@ class ForApprovalController extends CI_Controller
 
 	public function  ExportToExcel()
 	{
-		
-		$RefId = $this->input->post('RefId_value');
-	
-		$strSQL = "SELECT * From  primo_view_Integration WHERE IsNull(Relevancy,'')='' AND RefId = '".$RefId."'  ";
+			
+		$strSQL = "SELECT * From  primo_view_Integration WHERE IsNull(Relevancy,'')='' AND Status ='for Approval'  ";
 		$query = $this->WMSIdeagenDB->query($strSQL);
 		$data = $query->result();
 		
@@ -213,72 +241,76 @@ class ForApprovalController extends CI_Controller
 					exit;
 				}
 				else if(!empty($GetRefIDHeader) && $GetRefIDHeader !="RefId"){
+					
 					echo "RefId not in field";
 					exit;
-				}
+					
+				}else{
 			
 				
 				
-				for($row=2; $row<=$highestRow; $row++)
-				{
-					
-					
-					
-					//Get and set value from excel
-					$RefId = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(1, $row)->getValue();
-					$MetaDataInfo = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(2, $row)->getValue();
-					$Configname = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(3, $row)->getValue();
-					$Jurisdiction = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(4, $row)->getValue();
-					$Status = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(5, $row)->getValue();
-					$Title = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(6, $row)->getValue();
-					$Filename = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(7, $row)->getValue();
-					$DateRegistered = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(8, $row)->getValue();
-					
-					//Query result if existing the RefID and status is for approval		
-					$EntryForm = "SELECT * From  primo_view_Integration WHERE IsNull(Relevancy,'')='' AND  RefId=".$RefId." AND Status= 'for Approval' ";
-					$query = $this->WMSIdeagenDB->query($EntryForm);
-					$dataform = $query->result();
-					$count = count($dataform);
-					
-					if($count > 0)
-					{
+						for($row=2; $row<=$highestRow; $row++)
+						{
 							
-							$valid_staus = array('Approved','Discarded/Others');	
-								
-							if(!empty($Status) && in_array($Status,$valid_staus) )
+							
+							
+							//Get and set value from excel
+							$RefId = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(1, $row)->getValue();
+							$MetaDataInfo = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(2, $row)->getValue();
+							$Configname = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(3, $row)->getValue();
+							$Jurisdiction = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(4, $row)->getValue();
+							$Status = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(5, $row)->getValue();
+							$Title = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(6, $row)->getValue();
+							$Filename = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(7, $row)->getValue();
+							$DateRegistered = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(8, $row)->getValue();
+							
+							//Query result if existing the RefID and status is for approval		
+							$EntryForm = "SELECT * From  primo_view_Integration WHERE IsNull(Relevancy,'')='' AND  RefId=".$RefId." AND Status= 'for Approval' ";
+							$query = $this->WMSIdeagenDB->query($EntryForm);
+							$dataform = $query->result();
+							$count = count($dataform);
+							
+							if($count > 0)
 							{
+									
+									$valid_staus = array('Approved','Discarded/Others');	
+										
+									if(!empty($Status) && in_array($Status,$valid_staus) )
+									{
+										
+										//update status
+										$strSQL = "UPDATE PRIMO_Integration SET Status ='".$Status."'  where RefId = '".$RefId."' ";
+										$query = $this->WMSIdeagenDB->query($strSQL);
+										echo "updated";
+										
+										/*
+										$data[] = array(
+										  'RefID'  => $RefId,
+										  'MetaDataInfo' => $MetaDataInfo,
+										  'Configname' => $Configname,
+										  'Jurisdiction' => $Jurisdiction,
+										  'Status' => $Status,
+										  'Title' => $Title,
+										  'Filename' => $Filename,
+										  'DateRegistered' => $DateRegistered
+										 );
+										 */
+										 
+									
+									}else{
+										
+										echo "Invalid Status  <br><small>*allow value(Approved and Discarded/Others)</small>";
+									}
 								
-								//update status
-								$strSQL = "UPDATE PRIMO_Integration SET Status ='".$Status."'  where RefId = '".$RefId."' ";
-								$query = $this->WMSIdeagenDB->query($strSQL);
-								echo "updated";
 								
-								/*
-								$data[] = array(
-								  'RefID'  => $RefId,
-								  'MetaDataInfo' => $MetaDataInfo,
-								  'Configname' => $Configname,
-								  'Jurisdiction' => $Jurisdiction,
-								  'Status' => $Status,
-								  'Title' => $Title,
-								  'Filename' => $Filename,
-								  'DateRegistered' => $DateRegistered
-								 );
-								 */
-								 
-							
-							}else{
-								
-								echo "Invalid Status  <br><small>*allow value(Approved and Discarded/Others)</small>";
 							}
-						
-						
-					}
-					else{
-						echo "No existing RefId in the table";
-					}
+							else{
+								echo "No existing RefId in the table";
+							}
 
-			}
+					}// end of for loop
+					
+				}//end of else	
 
 
 		}

@@ -25,7 +25,10 @@
 
 		   <div class="box-header with-border margin">
 				<div class='row'>
-					<div class="col-lg-12">					
+					<div class="col-lg-6">
+							<a href="javascript:void(0)" type="button" class="btn btn-success  btn-flat btnBatching">
+								 Batch
+							</a>	
 					</div>
 				</div>
 			</div>
@@ -37,9 +40,10 @@
 				<table id="mainDatatables"  class="table table-bordered table-hover" cellspacing="0" width="100%">
 					<thead>
 					<tr>
+					  <th>Select All<br><input type='checkbox' class='SelectAll' /></th>
 					  <th>RefID</th>
 					  <th>MetaData Info.</th>
-					  <th>Configname</th>
+					  <th>SGML Filename</th>
 					  <th>Jurisdiction</th>
 					  <th>Status</th>
 					  <th>Title</th>
@@ -67,6 +71,24 @@
 <!-- include  base url js file  -->
 <script type="text/javascript">
 	let baseUrl = "<?= base_url();?>";
+</script>
+
+
+<script>
+var SGML_file_array = [];
+</script>
+
+<script>
+Array.prototype.contains = function (val) 
+{ 
+
+	for(var i = 0; i < this.length; i++ )
+	{
+		if(JSON.stringify(this[i]) === JSON.stringify(val)) return true;
+	}
+	return false;
+	
+} 
 </script>
 
 
@@ -114,14 +136,30 @@ function loadTable(){
 		
 		"columnDefs": [ {
 		"targets": [0,1,2,3,4,5],
-		"orderable": false
+		
 		}],
-			
+		
+		order:[[2,"asc"]],
+		
 		"bDestroy": true,
 		"columns"    : [
+		{
+		   "data": null,
+		   "bSortable": false,
+		   "mRender": function(data, type, value) {
+			
+				if(value['SGML_filename'] != ''){
+				   return '<input type="checkbox" id="parent_checkbox" class="checkboxes" name="parent_checkbox"  data-SGML_filename="'+value['SGML_filename']+'"  value="'+value['RefId']+'"  >';
+				}
+				else{
+					return '';
+				}
+			}
+		
+		},
 		{'data': 'RefId'},
 		{'data': 'meta_data'},
-		{'data': 'ConfigName'},
+		{'data': 'SGML_filename'},
 		{'data': 'Jurisdiction'},
 		{'data': 'Status'},
 		{'data': 'Title'},
@@ -130,8 +168,18 @@ function loadTable(){
 		],
 
 		"fnRowCallback": function( nRow, aData, iDisplayIndex) {
-		$(nRow).attr("RefId",aData['RefId']);
-		return nRow;
+			
+			
+			if ( aData['SGML_filename'] == "" ){
+				//$('td', nRow).css('background-color', '#dedddd');
+				 $(nRow).css('background-color', '#ff9487');
+			}
+			
+			$(nRow).attr("RefId",aData['RefId']);
+			return nRow;
+		
+		
+		
 		},
 
 	});
@@ -148,5 +196,83 @@ function reload_table()
 </script>
 
 
+<script>
+$('.SelectAll').on('click', function() 
+{
+
+    var check = $(this).is(':checked');
+	 
+    if(check == true){
+		
+	
+		$('.checkboxes').each(function() {
+			this.checked = true;  
+			$(this).closest("tr").css('background-color', '#fcff95');			
+		}); 
+				
+	}
+	else{
+		
+		$(':checkbox').each(function() {
+            this.checked = false; 
+			$(this).closest("tr").css('background-color', '');
+        });
+		
+	}
+
+}); 
+
+</script>
+
+
+<script type="text/javascript">
+$('#mainDatatables').on('change', 'input[name="parent_checkbox"]', function() {
+		
+	let SGML_filename = $(this).attr("data-SGML_filename");
+
+	
+	if ($(this).is(":checked")) 
+	{
+		
+      $(this).prop("checked", true);
+	  $(this).closest("tr").css('background-color', '#fcff95');	
+
+    }
+	else
+	{
+		
+		$(this).closest("tr").css('background-color', '');
+
+	}
+	
+});  
+</script>
+
+<script>
+$(".btnBatching").click(function() {
+	
+	let array_store = [];
+		
+		
+	$('input[class=checkboxes]:checked').each(function() {	
+		
+		let SGML_filename = $(this).attr("data-SGML_filename");
+		
+		array_store.push(SGML_filename);
+		
+	}); 
+	
+	var uniqueNames = [];
+	$.each(array_store, function(i, el){
+		if($.inArray(el, uniqueNames) === -1) uniqueNames.push(el);
+	});
+	
+	
+	alert("original fetch data = " + JSON.stringify(array_store));
+	
+	alert("remove all duplicate = " + JSON.stringify(uniqueNames));
+	
+});
+</script>
 
 @endsection

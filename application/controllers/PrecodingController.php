@@ -36,7 +36,7 @@ class PrecodingController extends CI_Controller
 		
 			$search_val  = $this->input->post('search_val');
 		
-			$strSQL = "SELECT * From  primo_view_Integration WHERE IsNull(Relevancy,'')='' AND Status= '".$search_val."' ";
+			$strSQL = "SELECT TOP(10) * From  primo_view_Integration WHERE IsNull(Relevancy,'')='' AND Status= '".$search_val."' ";
 			$query = $this->WMSIdeagenDB->query($strSQL);
 			$post = $query->result();
 
@@ -155,16 +155,18 @@ class PrecodingController extends CI_Controller
 		$loaddDataEntry = $this->DataEntrySettings_model->loaddDataEntry();
 		
 		//call loadhtmlfile into ckeditot
-		$htmlfile = $this->loadhtmlfilein_ckeditor();
+		
 
 		//query the RefID details
 		$strSQL = "SELECT * From  primo_view_Integration WHERE IsNull(Relevancy,'')='' AND RefId ='".$RefId."' ";
 		$query = $this->WMSIdeagenDB->query($strSQL);
 	    $result = $query->row();
+		// echo"<pre>";
+		// print_r($result);
+		// echo"</pre>";
+		// die();
+		$htmlfile = $this->loadhtmlfilein_ckeditor($result->RefId, $result->Filename);
 		
-		
-		
-			
 		$data = array(
 					'dataresult' => $result,
 					'RefId' => $RefId,
@@ -193,14 +195,12 @@ class PrecodingController extends CI_Controller
 	
 	
 	
-	public function convertPDFToHTML(){
+	public function convertPDFToHTML($RefId, $filename){
+		// $RefId = "22268";
+		// $filename="SOR2020-178NewReg";
 		
-			
-		$JobId = "22268";
-		$filename="SOR2020-178NewReg";
-		
-		$pdf_file =  $_SERVER{'DOCUMENT_ROOT'}."\\primotpcos\\uploadfiles\\".$JobId."\\".pathinfo($filename, PATHINFO_FILENAME).".pdf";
-		$html_dir =  $_SERVER{'DOCUMENT_ROOT'}."\\primotpcos\\uploadfiles\\".$JobId."\\".pathinfo($filename, PATHINFO_FILENAME).".html";
+		$pdf_file =  $_SERVER{'DOCUMENT_ROOT'}."\\primotpcos\\uploadfiles\\".$RefId."\\".pathinfo($filename, PATHINFO_FILENAME).".pdf";
+		$html_dir =  $_SERVER{'DOCUMENT_ROOT'}."\\primotpcos\\uploadfiles\\".$RefId."\\".pathinfo($filename, PATHINFO_FILENAME).".html";
 		 $cmd = "pdftotext $pdf_file $html_dir";
 		
 		$cmd = "mutool convert -o $html_dir $pdf_file";
@@ -213,24 +213,30 @@ class PrecodingController extends CI_Controller
 	}
 
 	
-	public function loadhtmlfilein_ckeditor()
+	public function loadhtmlfilein_ckeditor($RefId, $Filename)
 	{
-		
-			$pp = $_SERVER{'DOCUMENT_ROOT'}."/primotpcos/uploadfiles/22268/Reg_of_n_R134_A103_Appendix.html";
-			
-			if(file_exists($pp )){
-			     $sFile= file_get_contents($pp);
-			 
-			   	$encoding = mb_detect_encoding($sFile, mb_detect_order(), false);
-				
-			    if($encoding == "UTF-8"){
-					$sFile = mb_convert_encoding($sFile, "UTF-8", "Windows-1252");    
-				}
-				
-				return $htmlfile_text = iconv(mb_detect_encoding($sFile, mb_detect_order(), false), "UTF-8//IGNORE", $sFile);
-			
-				
+		$pp = $_SERVER{'DOCUMENT_ROOT'}."/primotpcos/uploadfiles/".$RefId."/".$Filename;
+
+		if(file_exists($pp )){
+		    $sFile= file_get_contents($pp);
+		   	$encoding = mb_detect_encoding($sFile, mb_detect_order(), false);
+		    if($encoding == "UTF-8"){
+				$sFile = mb_convert_encoding($sFile, "UTF-8", "Windows-1252");    
 			}
+			return $htmlfile_text = iconv(mb_detect_encoding($sFile, mb_detect_order(), false), "UTF-8//IGNORE", $sFile);
+		}
+		else{
+			$path_parts = pathinfo($pp);
+			$pdfname = $path_parts['filename'];
+			$pp = $_SERVER{'DOCUMENT_ROOT'}."/primotpcos/uploadfiles/".$RefId."/".$pdfname.".pdf";
+			if(file_exists($pp )){
+			    $this->convertPDFToHTML($RefId, $filename);
+			    $this->loadhtmlfilein_ckeditor($RefId, $Filename);
+			}
+			
+			
+		}
+		
 
 	}
 
@@ -242,6 +248,8 @@ class PrecodingController extends CI_Controller
 		$RefId = $this->input->post('RefId'); 
 		$UserID = $this->session->userdata('UserID');
 		$RefIdStatus = $this->input->post('RefIdStatus');
+		
+
 
 		if(!empty($answerlist))
 		{
@@ -258,7 +266,7 @@ class PrecodingController extends CI_Controller
 			 
 			if(!empty($data_ans['answer'])){
 									
-					$strSQL = "INSERT INTO tbldataentry_forms (Refid,FieldName,FieldType,Answer,UserId) VALUES ('".$RefId."','".$data_ans['fieldname']."','".$data_ans['fieldtype']."','".$data_ans['answer']."','".$UserID."')";
+					$strSQL = "INSERT INTO tbldataentry_forms (Refid,FieldName,FieldType,Answer,UserId,FieldCaption) VALUES ('".$RefId."','".$data_ans['fieldname']."','".$data_ans['fieldtype']."','".$data_ans['answer']."','".$UserID."','".$data_ans['fieldcaption']."')";
 					$query = $this->WMSIdeagenDB->query($strSQL);
 			}
 			
@@ -268,11 +276,12 @@ class PrecodingController extends CI_Controller
 		
 		
 		//update table if status is New
-		if($RefIdStatus  == "NEW")
+		if($RefIdStatus  == "NEW" ||$RefIdStatus  == "New"  )
 		{
 			$strSQL = "UPDATE PRIMO_Integration SET Status ='for Approval'  where RefId = '".$RefId."' ";
 			$query = $this->WMSIdeagenDB->query($strSQL);
 		}
+		
 		
 		echo "done";
 
