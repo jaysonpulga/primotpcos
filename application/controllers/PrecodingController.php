@@ -8,6 +8,7 @@ class PrecodingController extends CI_Controller
 		
 		parent::__construct();
 		$this->load->helper('url');
+		
 		$this->load->database();
 		$this->load->library('session');
 		$this->load->model('DataEntrySettings_model');
@@ -147,6 +148,7 @@ class PrecodingController extends CI_Controller
 	
 	public function fullscreen($RefId)
 	{
+		$this->load->helper('pdf_helper');
 		//$this->convertPDFToHTML();
 
 		//load dataentry model and get loaddDataentry html form 
@@ -161,7 +163,9 @@ class PrecodingController extends CI_Controller
 		// echo"</pre>";
 		// die();
 		//call loadhtmlfile into ckeditor
-		$htmlfile = $this->loadhtmlfilein_ckeditor($result->RefId, $result->Filename);
+	
+		$Filename = pathinfo($result->Filename, PATHINFO_FILENAME);
+		$htmlfile = $this->loadhtmlfilein_ckeditor($result->RefId, $Filename);
 		
 		$data = array(
 			'dataresult' => $result,
@@ -172,24 +176,67 @@ class PrecodingController extends CI_Controller
 		$this->load->view('acquire/precoding_fullscreen',$data);
 		
 	}
-	
-	
-	public function GetAnswerDataForm(){
+
+	public function loadhtmlfilein_ckeditor($RefId, $Filename)
+	{
+		$directory = 'uploadfiles/'.$RefId;
+		if (!file_exists($directory)) {
+		    mkdir($directory, 0777, true);
+		}
+
+		$htmlFile = $directory."/".$Filename.".html";
+		$pdfFile = $directory."/".$Filename.".pdf";
 		
-		$RefId = $this->input->post('RefId'); 
-		
-		//Get  tbldataentry_forms
-		$strSQLDataEntryAnswer = "SELECT * From  tbldataentry_forms WHERE  RefId= '".$RefId."' ";
-		$query = $this->WMSIdeagenDB->query($strSQLDataEntryAnswer);
-		$dataAnswer = $query->result();
-		
-		echo json_encode($dataAnswer);
-		
+
+		if(file_exists($htmlFile)){
+		    $sFile= file_get_contents($htmlFile);
+		   	$encoding = mb_detect_encoding($sFile, mb_detect_order(), false);
+		    if($encoding == "UTF-8"){
+				$sFile = mb_convert_encoding($sFile, "UTF-8", "Windows-1252");    
+			}
+			return $htmlfile_text = iconv(mb_detect_encoding($sFile, mb_detect_order(), false), "UTF-8//IGNORE", $sFile);
+		}
+		else if(file_exists($pdfFile)){
+			$this->convertPDFToHTML($RefId, $Filename);
+			$this->loadhtmlfilein_ckeditor($RefId, $Filename);
+		}else{
+			$this->create_pdf($RefId, $Filename);
+			$this->convertPDFToHTML($RefId, $Filename);
+			$this->loadhtmlfilein_ckeditor($RefId, $Filename);
+		}
 	}
 	
-	
-	
-	
+	public function create_pdf($RefId, $Filename){
+		$directory = 'uploadfiles/'.$RefId;
+		$pdfFile = $directory."/".$Filename.".pdf";
+		if (file_exists($pdfFile)) unlink($pdfFile);
+
+		tcpdf();
+		$obj_pdf = new TCPDF('P', PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+		$obj_pdf->SetCreator(PDF_CREATOR);
+		$title = $Filename;
+		$obj_pdf->SetTitle($title);
+		$obj_pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
+		$obj_pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+		$obj_pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+		$obj_pdf->SetDefaultMonospacedFont('helvetica');
+		$obj_pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+		$obj_pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+		$obj_pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+		$obj_pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+		$obj_pdf->SetFont('helvetica', '', 9);
+		$obj_pdf->setFontSubsetting(false);
+		$obj_pdf->AddPage();
+		ob_start();
+		    // we can have any view part here like HTML, PHP etc
+		    $content = ob_get_contents();
+		ob_end_clean();
+		$obj_pdf->writeHTML($content, true, false, true, false, '');
+		$obj_pdf->Output($pdfFile, 'F');
+
+		exit;
+	}
+
 	public function convertPDFToHTML($RefId, $filename){
 		// $RefId = "22268";
 		// $filename="SOR2020-178NewReg";
@@ -204,29 +251,20 @@ class PrecodingController extends CI_Controller
 		
 		exit;
 	}
-
 	
-	public function loadhtmlfilein_ckeditor($RefId, $Filename)
-	{
-		$pp = $_SERVER{'DOCUMENT_ROOT'}."/primotpcos/uploadfiles/".$RefId."/".$Filename;
-		if(file_exists($pp)){
-		    $sFile= file_get_contents($pp);
-		   	$encoding = mb_detect_encoding($sFile, mb_detect_order(), false);
-		    if($encoding == "UTF-8"){
-				$sFile = mb_convert_encoding($sFile, "UTF-8", "Windows-1252");    
-			}
-			return $htmlfile_text = iconv(mb_detect_encoding($sFile, mb_detect_order(), false), "UTF-8//IGNORE", $sFile);
-		}
-		else{
-			$path_parts = pathinfo($pp);
-			$pdfname = $path_parts['filename'];
-			$pp = $_SERVER{'DOCUMENT_ROOT'}."/primotpcos/uploadfiles/".$RefId."/".$pdfname.".pdf";
-			if(file_exists($pp)){
-			    $this->convertPDFToHTML($RefId, $Filename);
-			    $this->loadhtmlfilein_ckeditor($RefId, $Filename);
-			}
-		}
+	public function GetAnswerDataForm(){
+		
+		$RefId = $this->input->post('RefId'); 
+		
+		//Get  tbldataentry_forms
+		$strSQLDataEntryAnswer = "SELECT * From  tbldataentry_forms WHERE  RefId= '".$RefId."' ";
+		$query = $this->WMSIdeagenDB->query($strSQLDataEntryAnswer);
+		$dataAnswer = $query->result();
+		
+		echo json_encode($dataAnswer);
+		
 	}
+
 	
 	public function saveFormData()
 	{
