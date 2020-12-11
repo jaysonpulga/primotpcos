@@ -163,10 +163,18 @@ class PrecodingController extends CI_Controller
 		// echo"</pre>";
 		// die();
 		//call loadhtmlfile into ckeditor
-	
-		$Filename = pathinfo($result->Filename, PATHINFO_FILENAME);
-		$htmlfile = $this->loadhtmlfilein_ckeditor($result->RefId, $Filename);
 		
+		$Filename = pathinfo($result->Filename, PATHINFO_FILENAME);
+		$RefId = $result->RefId;
+		$directory = 'uploadfiles/'.$result->RefId;
+		if (!file_exists($directory)) {
+		    mkdir($directory, 0777, true);
+		    $this->create_pdf($RefId, $Filename);
+		    $this->convertPDFToHTML($RefId, $Filename);
+		}  
+		$htmlfile = $this->loadhtmlfilein_ckeditor($RefId, $Filename);
+
+
 		$data = array(
 			'dataresult' => $result,
 			'RefId' => $RefId,
@@ -179,15 +187,10 @@ class PrecodingController extends CI_Controller
 
 	public function loadhtmlfilein_ckeditor($RefId, $Filename)
 	{
-		$directory = 'uploadfiles/'.$RefId;
-		if (!file_exists($directory)) {
-		    mkdir($directory, 0777, true);
-		}
-
-		$htmlFile = $directory."/".$Filename.".html";
-		$pdfFile = $directory."/".$Filename.".pdf";
+	
+		$htmlFile = 'uploadfiles/'.$RefId."/".$Filename.".html";
+		$pdfFile = 'uploadfiles/'.$RefId."/".$Filename.".pdf";
 		
-
 		if(file_exists($htmlFile)){
 		    $sFile= file_get_contents($htmlFile);
 		   	$encoding = mb_detect_encoding($sFile, mb_detect_order(), false);
@@ -198,12 +201,9 @@ class PrecodingController extends CI_Controller
 		}
 		else if(file_exists($pdfFile)){
 			$this->convertPDFToHTML($RefId, $Filename);
-			$this->loadhtmlfilein_ckeditor($RefId, $Filename);
-		}else{
-			$this->create_pdf($RefId, $Filename);
-			$this->convertPDFToHTML($RefId, $Filename);
-			$this->loadhtmlfilein_ckeditor($RefId, $Filename);
+			return $this->loadhtmlfilein_ckeditor($RefId, $Filename);
 		}
+		
 	}
 	
 	public function create_pdf($RefId, $Filename){
@@ -234,7 +234,7 @@ class PrecodingController extends CI_Controller
 		$obj_pdf->writeHTML($content, true, false, true, false, '');
 		$obj_pdf->Output($pdfFile, 'F');
 
-		exit;
+		// exit;
 	}
 
 	public function convertPDFToHTML($RefId, $filename){
@@ -249,7 +249,7 @@ class PrecodingController extends CI_Controller
 		
 		exec($cmd, $out, $ret);
 		
-		exit;
+		// exit;
 	}
 	
 	public function GetAnswerDataForm(){
