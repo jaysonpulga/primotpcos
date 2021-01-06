@@ -543,3 +543,7 @@ $config['proxy_ips'] = '';
 
 
 $config['composer_autoload'] = 'vendor/autoload.php';
+
+$autoload['libraries'] = array('cache','session');
+
+$autoload['drivers'] = array();

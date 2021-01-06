@@ -64,13 +64,29 @@ $route['precoding'] = 'PrecodingController';
 $route['fullscreen/(:num)'] = 'PrecodingController/fullscreen/$1';
 $route['forApproval'] = 'ForApprovalController';
 $route['batching'] = 'BatchingController';
+$route['registered'] = 'RegisteredController';
 $route['registration'] = 'RegistrationController';
 
 
 //Settings Menu
 $route['DataEntrySettings'] = 'DataEntrySettingsController';
 $route['EditorSettings'] = 'EditorSettingsController';
+$route['TaskSettings'] = 'TaskSettingsController';
+$route['UserList'] = 'UserListController';
 
+
+//Tasksetting configuration
+$route['TaskConfiguration'] = 'TaskSettingsController/task_configuration';
+
+//User Access Settings
+$route['UserAccess'] = 'UserListController/user_access';
+$route['UserUpdate'] = 'UserListController/user_update';
+
+
+
+//ENRICH
+$route['CodeMirror'] = 'CodeMirrorController';
+$route['Splitview'] = 'SplitviewController';
 
 
 

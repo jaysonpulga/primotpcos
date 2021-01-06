@@ -3,10 +3,13 @@ if(!defined('BASEPATH')) exit('No direct script access allowed');
 
 class Login extends CI_Controller
 {
+	public $CI = NULL;
+	
 	
 	public function __construct()
 	{
 		parent::__construct();
+		$this->CI = & get_instance();
 		
 		 /*Load the URL helper*/ 
          $this->load->helper('url'); 
@@ -97,7 +100,7 @@ class Login extends CI_Controller
 	
 	
 	}
-	
+
 	
 	
 }

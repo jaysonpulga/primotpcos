@@ -37,7 +37,7 @@
 		
             <!-- /.box-header -->
             <div class="box-body margin table-responsive">
-				<table id="mainDatatables"  class="table table-bordered table-hover" cellspacing="0" width="100%">
+				<table id="mainDatatables"  class="table table-bordered table-hover " cellspacing="0" width="100%">
 					<thead>
 					<tr>
 					  <th>Select All<br><input type='checkbox' class='SelectAll' /></th>
@@ -46,7 +46,7 @@
 					  <th>SGML Filename</th>
 					  <th>Jurisdiction</th>
 					  <th>Status</th>
-					  <th>Title</th>
+					  <th>Regulation Number</th>
 					  <th>Filename</th>
 					  <th>Date Registered</th>
 					</tr>
@@ -68,27 +68,35 @@
 <!-- /.content -->
 
 
+
+
+<div id="modal_view_batching" class="modal fade" role="dialog">
+	  <div class="modal-dialog">
+		<!-- Modal content-->
+		<div class="modal-content">
+		  <div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal">&times;</button>
+			<h4 class="modal-title"></h4>
+		  </div>
+		  <div class="modal-body">
+			<div class="box-body">
+				<div class="col-lg-12">
+					<center><span id="workflow"></span></center> 
+				</div>
+              </div>
+		  </div>
+		  <div class="modal-footer"></div>
+		</div>
+	  </div>
+ </div>
+<!-- /.content -->
+
+
+
+
 <!-- include  base url js file  -->
 <script type="text/javascript">
 	let baseUrl = "<?= base_url();?>";
-</script>
-
-
-<script>
-var SGML_file_array = [];
-</script>
-
-<script>
-Array.prototype.contains = function (val) 
-{ 
-
-	for(var i = 0; i < this.length; i++ )
-	{
-		if(JSON.stringify(this[i]) === JSON.stringify(val)) return true;
-	}
-	return false;
-	
-} 
 </script>
 
 
@@ -118,8 +126,8 @@ function loadTable(){
 	 table =  $('#mainDatatables').DataTable({
 		 
 		'paging'      : true,
-		'lengthChange': false,
-		'searching'   : false,
+		'lengthChange': true,
+		'searching'   : true,
 		'info'        : true,
 		"processing": true, //Feature control the processing indicator.
 		// Load data for the table's content from an Ajax source
@@ -147,13 +155,25 @@ function loadTable(){
 		   "data": null,
 		   "bSortable": false,
 		   "mRender": function(data, type, value) {
+			   
+			   
+				if(value['SGML_filename']  == "" || value['SGML_filename'] == null )
+				{
+					
+					return  '<a title="edit" href="fullscreen/'+value["RefId"]+'" target="_blank" ><i class="fa fa-fw fa-pencil"></i></a>';
+				}
+				else
+				{
+						
+						let button = '<input type="checkbox" id="parent_checkbox" class="checkboxes" name="parent_checkbox"  data-SGML_filename="'+value['SGML_filename']+'"  value="'+value['RefId']+'">&nbsp;&nbsp;';
+				   
+						button += '<a  title="edit" href="fullscreen/'+value["RefId"]+'" target="_blank" ><i class="fa fa-fw fa-pencil"></i></a>';
+				   
+				   return button;
+					
+				}
 			
-				if(value['SGML_filename'] != ''){
-				   return '<input type="checkbox" id="parent_checkbox" class="checkboxes" name="parent_checkbox"  data-SGML_filename="'+value['SGML_filename']+'"  value="'+value['RefId']+'"  >';
-				}
-				else{
-					return '';
-				}
+				
 			}
 		
 		},
@@ -162,7 +182,7 @@ function loadTable(){
 		{'data': 'SGML_filename'},
 		{'data': 'Jurisdiction'},
 		{'data': 'Status'},
-		{'data': 'Title'},
+		{'data': 'RegulationNumber'},
 		{'data': 'Filename'},
 		{'data': 'DateRegistered'},
 		],
@@ -170,9 +190,9 @@ function loadTable(){
 		"fnRowCallback": function( nRow, aData, iDisplayIndex) {
 			
 			
-			if ( aData['SGML_filename'] == "" ){
+			if ( aData['SGML_filename'] == "" || aData['SGML_filename'] == null ){
 				//$('td', nRow).css('background-color', '#dedddd');
-				 $(nRow).css('background-color', '#ff9487');
+				 $(nRow).css('background-color', '#ffc7c7bd');
 			}
 			
 			$(nRow).attr("RefId",aData['RefId']);
@@ -249,30 +269,141 @@ $('#mainDatatables').on('change', 'input[name="parent_checkbox"]', function() {
 </script>
 
 <script>
+let collect_data = [];
+</script>
+
+<script>
 $(".btnBatching").click(function() {
 	
 	let array_store = [];
-		
-		
+	
 	$('input[class=checkboxes]:checked').each(function() {	
 		
 		let SGML_filename = $(this).attr("data-SGML_filename");
-		
 		array_store.push(SGML_filename);
 		
 	}); 
 	
-	var uniqueNames = [];
-	$.each(array_store, function(i, el){
-		if($.inArray(el, uniqueNames) === -1) uniqueNames.push(el);
+	
+	if( array_store.length == 0){
+		
+		swal({
+			type:'warning',
+			text:"Please select data"
+		})
+		return false;
+		
+	}
+	collect_data = [];
+	collect_data = array_store;
+	$.ajax({	
+		url: baseUrl+'BatchingController/call_wms_WorkFlows_table',
+		dataType: "json",
+		success:function(data){
+			
+			var button ="";
+			if(data.length > 0){
+				
+				$.each(data, function(index) {
+
+					 button += "<a class='btn btn-app workflow' data-WorkFlowId="+data[index].WorkFlowId+"  >"+data[index].Description+"</a>";
+	
+				
+				});
+				
+				$("#workflow").empty().html(button);
+				$('.modal-title').html("Choose WorkFlow");
+				var options = { backdrop : 'static'}
+				$('#modal_view_batching').modal(options);
+				
+			}
+			else{
+				alert('error loading data');
+			}
+				
+		}
+		
+	});
+		
+});
+</script>
+
+<script>
+$(document).on('click','.workflow',function(){
+	
+	
+	var WorkFlowId = $(this).attr('data-WorkFlowId');
+	
+	var uniqueFileNames = [];
+	$.each(collect_data, function(i, el){
+		if($.inArray(el, uniqueFileNames) === -1) uniqueFileNames.push(el);
 	});
 	
 	
-	alert("original fetch data = " + JSON.stringify(array_store));
+	$.ajax({
+			url: baseUrl+'BatchingController/UpdateWorkflow',
+			data : {WorkFlowId:WorkFlowId,uniqueFileNames:uniqueFileNames},
+			type : 'POST',
+			beforeSend:function(){
+				
+				$("body").waitMe({
+					effect: 'timer',
+					text: 'UPDATING ........ ',
+					bg: 'rgba(255,255,255,0.90)',
+					color: '#555'
+				});
+				
+			},
+			success:function(data){
+				
+				$('body').waitMe('hide');
+				
+				if(data == 'done'){
+					swal({
+						type:'success',
+						title:"Data Saved!",
+						text:""
+					}).then(function(){
+						
+						reload_table();
+						$('#modal_view_batching').modal("hide");
+						loadMenubar();
+						
+					});
+				}
+		
+			
+			},
+			error:function(){
+				$('body').waitMe('hide');
+					
+				swal({
+					type:'error',
+					title:"Oops..",
+					text:"Internal error "
+				})
+
+			}
+			
+	});
 	
-	alert("remove all duplicate = " + JSON.stringify(uniqueNames));
+	
+	
+	//alert(WorkFlowId);
+	//alert("original fetch data = " + JSON.stringify(collect_data));
+	//alert("remove all duplicate = " + JSON.stringify(uniqueNames));
+	
+	
 	
 });
 </script>
 
+<style>
+
+.btn-app {
+    min-width: 210px !important;
+    height: 70px;
+    font-size: 18px !important;
+}
+</style>
 @endsection

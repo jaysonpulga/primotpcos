@@ -25,11 +25,15 @@
 
 			<div class="box-header with-border margin">
 				<div class="row">
-					<div class="col-lg-12">
-						<span class="pull-right">
+					<div class="col-lg-6">
 								<a href="javascript:void(0)" type="button" class="btn btn-success  btn-flat btnupdateStatus disabled">
 									<i class="fa fa-fw fa-pencil"></i> Update
 								</a>	
+					</div>
+				
+					<div class="col-lg-6">
+						<span class="pull-right">
+								
 								
 								<a  target="_blank" href="<?= base_url();?>ForApprovalController/ExportToExcel"  type="button" class="btn btn-success  btn-flat">
 									<span class="glyphicon glyphicon-export"></span> Export to Excel
@@ -53,9 +57,10 @@
 					  <th>RefID</th>
 					  <th>Update Status?</th>
 					  <th>MetaData Info.</th>
+					  <th>SGML Filename</th> 
 					  <th>Jurisdiction</th>
 					  <th>Status</th>
-					  <th>Title</th>
+					  <th>Regulation Number</th>
 					  <th>Filename</th>
 					  <th>Date Registered</th>
 					</tr>
@@ -86,13 +91,11 @@
 			<button type="button" class="close" data-dismiss="modal">&times;</button>
 			<h4 class="modal-title"></h4>
 		  </div>
-		  
-		
 		  <div class="modal-body">
 			<div class="box-body">
 				  <form method="post" id="import_form" enctype="multipart/form-data">
 					   <p><label>Select Excel File</label>
-					   <input type="file" class="form-control" name="upload_file" id="upload_file" required accept=".xls, .xlsx" /></p>
+					   <input type="file" class="form-control" name="upload_file" id="upload_file" required accept=".xls,.xlsx" /></p>
 					</form>
 					<small>allowed type: xls,csv,xlxs</small>
               </div>
@@ -140,8 +143,8 @@ function loadTable(){
 	 table =  $('#mainDatatables').DataTable({
 		 
 		'paging'      : true,
-		'lengthChange': false,
-		'searching'   : false,
+		'lengthChange': true,
+		'searching'   : true,
 		'info'        : true,
 		"processing": true, //Feature control the processing indicator.
 		// Load data for the table's content from an Ajax source
@@ -179,16 +182,18 @@ function loadTable(){
 			   return `<select class="form-control seleclValue"  disabled  id="refIDStatus${value.RefId}" >
 						<option value="">-- Select Status --</option>
 						<option value="Approved">Approved</option>
-						<option value="Discarded/Others">Discarded/Others</option>
+						<option value="Discarded">Discarded</option>
+						<option value="Others">Others</option>
 						</select>`;
     		}
 		
 		},
 		
 		{'data': 'meta_data'},
+		{'data': 'SGML_filename'},
 		{'data': 'Jurisdiction'},
 		{'data': 'Status'},
-		{'data': 'Title'},
+		{'data': 'RegulationNumber'},
 		{'data': 'Filename'},
 		{'data': 'DateRegistered'},
 		],
@@ -297,6 +302,7 @@ e.preventDefault();
 					}).then(function(){
 							
 							reload_table();
+							loadMenubar();
 					});	
 				}
 		
@@ -348,6 +354,7 @@ event.preventDefault();
 		   contentType:false,
 		   cache:false,
 		   processData:false,
+		   dataType: 'json',
 		   beforeSend:function(){
 						
 			$("body").waitMe({
@@ -363,18 +370,22 @@ event.preventDefault();
 				$('body').waitMe('hide');
 				$('#upload_file').val("");
 				
-				if(data == 'updated'){
+				
+				
+				if(data.resultStatus == 'success'){
 					swal({
-						type:'success',
-						title:"Updated!",
-						text:""
+						
+						type:'info',
+						//title:"Updated!",
+
+						html:data.res
 					}).then(function(){
 							
 							$('#modal_view_import').modal("hide");   
 							reload_table();
 					});	
 				}
-				else
+				else if(data.resultStatus == "failed")
 				{
 						
 						$('#modal_view_import').modal("hide"); 
@@ -382,7 +393,7 @@ event.preventDefault();
 						swal({
 							type:'error',
 							title:"Oops..",
-							html:data
+							html:data.res
 						})
 					 
 				}

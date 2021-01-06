@@ -133,7 +133,6 @@ class BatchingController extends CI_Controller
 			$strSQL = "SELECT * From  primo_view_Integration WHERE IsNull(Relevancy,'')='' AND Status= 'Approved' ";
 			$query = $this->WMSIdeagenDB->query($strSQL);
 			$post = $query->result();
-			
 			$data = array();
 			
 			if(!empty($post))
@@ -158,16 +157,12 @@ class BatchingController extends CI_Controller
 						foreach($dataform as $metaifo)
 						{
 							
-							if($metaifo->FieldName == "Sgml")
-							{
-								$SGML_filename = $metaifo->Answer;
-								
-							}
 							
 							if($metaifo->FieldCaption)
 							{
 								$metaDataFieldName .= "<td><center><b>".$metaifo->FieldCaption."</b></center></td>";
 							}
+						
 							
 							if($metaifo->Answer)
 							{								
@@ -176,7 +171,7 @@ class BatchingController extends CI_Controller
 						
 						}
 						
-						$metaDataTable .= "<table border='1'>";
+						$metaDataTable .= "<table class='table table-bordered table-striped' border=1>";
 						$metaDataTable .= "<tr>";
 						$metaDataTable .= $metaDataFieldName;
 						$metaDataTable .= "</tr>";
@@ -196,11 +191,12 @@ class BatchingController extends CI_Controller
 					$row = array();
 					$row['RefId'] = @$dd->RefId;
 					$row['meta_data'] = $metaDataTable;
-					$row['SGML_filename'] = $SGML_filename;
-					$row['ConfigName'] = @$dd->ConfigName;
+					$row['SGML_filename'] = @$dd->SGML_filename;
+					$row['ConfigName'] = @$dd->ConfigName; 
 					$row['Jurisdiction'] = @$dd->Jurisdiction;
 					$row['Status'] 		= @$dd->Status;
-					$row['Title'] =  '<a href="fullscreen/'.@$dd->RefId.'" target="_blank">'.$title.'</a>'; 
+					//$row['Title'] =  '<a href="fullscreen/'.@$dd->RefId.'" target="_blank">'.$title.'</a>';
+					$row['RegulationNumber'] = @$dd->RegulationNumber;
 					$row['Filename'] = @$dd->Filename;
 					$row['DateRegistered'] = @$dd->DateRegistered;
 					
@@ -241,6 +237,42 @@ class BatchingController extends CI_Controller
 	}
 
 
+
+	public function call_wms_WorkFlows_table(){
+		
+			$queryWms = "SELECT * From  wms_WorkFlows ";
+			$query = $this->WMSIdeagenDB->query($queryWms);
+			$data = $query->result();
+			
+			echo json_encode($data);
+
+	}
+	
+	public function UpdateWorkflow(){
+		
+		  $WorkFlowId = $this->input->post('WorkFlowId'); 
+		  $uniqueFileNames = $this->input->post('uniqueFileNames'); 
+
+
+
+	
+		 if(!empty($uniqueFileNames)){
+
+			foreach($uniqueFileNames as $filename){
+			
+	
+				$strSQL = "EXEC USP_PRIMO_INTEGRATE @ExecutionId='1', @SourceUrl='source_url', @Filename='".$filename."' , @WorkflowId='".$WorkFlowId."',@Jobid = ''  ";
+				$query = $this->WMSIdeagenDB->query($strSQL);
+				
+			}
+			 
+		 }
+	
+		 
+		 
+
+		echo "done";
+	}
 
 
 }

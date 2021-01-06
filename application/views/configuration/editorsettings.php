@@ -151,8 +151,8 @@ function loadTable(){
 	 table =  $('#mainDatatables').DataTable({
 		 
 		'paging'      : true,
-		'lengthChange': false,
-		'searching'   : false,
+		'lengthChange': true,
+		'searching'   : true,
 		'info'        : true,
 		"processing": true, //Feature control the processing indicator.
 		// Load data for the table's content from an Ajax source

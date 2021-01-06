@@ -22,96 +22,131 @@
               <i class="fa fa-angle-left pull-right"></i>
             </span>
           </a>
-          <ul class="treeview-menu" style="">
-             <li class="active"><a href="precoding"><i class="fa fa-circle-o"></i>Precoding <small class="label pull-right bg-green"><span class="precoding">0</span></small></a></li>
-			 <li class="active"><a href="forApproval"><i class="fa fa-question"></i>For Approval <small class="label pull-right bg-green"><span class="precoding">0</span></small></a></li>
-              <li class="active"><a href="batching"><i class="fa fa-file"></i>Batching<small class="label pull-right bg-green"><span class="batching">0</span></small></a></li>
-              <li class="active"><a href="registration"><i class="fa fa-file"></i>Registration</a></li>
-          </ul>
-        </li>
-       <li class="treeview">
-          <a href="#" 1="">
+			  <ul class="treeview-menu" style="">
+				 <li class="active">
+					<a href="precoding">
+						<i class="fa fa-circle-o"></i> Precoding 
+						<small class="label pull-right bg-green">
+							<span class="precoding_count">0</span>
+						</small>
+					</a>
+				</li>
+				 <li class="active">
+					<a href="forApproval">
+						<i class="fa fa-question"></i> For Approval 
+						<small class="label pull-right bg-green">
+							<span class="forApproval_count">0</span>
+						</small>
+					</a>
+				</li>
+				<li class="active">
+					<a href="batching">
+						<i class="fa fa-file"></i> Batching
+							<small class="label pull-right bg-green">
+								<span class="batching_count">0</span>
+							</small>
+					</a>
+				</li>
+				<li class="active">
+					<a href="registered">
+						<i class="fa fa-file"></i> Registered
+							<small class="label pull-right bg-green">
+								<span class="registered_count">0</span>
+							</small>
+					</a>
+				</li>
+				<li class="active">
+					<a href="registration">
+						<i class="fa fa-file"></i> Manual Registration
+					</a>
+				</li>
+			  </ul>
+       </li>
+       <li id="Parent_Menu_EnrichMenu"  class="treeview">
+          <a href="#">
             <i class="fa fa-spinner"></i> <span>ENRICH</span>
             <span class="pull-right-container">
               <i class="fa fa-angle-left pull-right"></i>
             </span>
           </a>
-          <ul class="treeview-menu" style="display: none;">			 
-			<li class="treeview">
-              <a href="#"><i class="fa fa-book"></i> CONTENTREVIEW <span class="pull-right-container">
-                  <i class="fa fa-angle-left pull-right"></i>
-				  <span class="label label-primary pull-right">0</span>
-                </span>
-              </a>
-              <ul class="treeview-menu">
-				 <li class=""><a href="GetNextBatch.php?page=Enrich&amp;Task=CONTENTREVIEW"><i class="fa  fa-hand-grab-o"></i>Get Next Batch</a></li>
-			  </ul>
-            </li>				 
-			<li class="treeview">
-              <a href="#"><i class="fa fa-book"></i> DATAEXTRACTION <span class="pull-right-container">
-                  <i class="fa fa-angle-left pull-right"></i>
-				  <span class="label label-primary pull-right">0</span>
-                </span>
-              </a>
-              <ul class="treeview-menu">
-				 <li class=""><a href="GetNextBatch.php?page=Enrich&amp;Task=DATAEXTRACTION"><i class="fa  fa-hand-grab-o"></i>Get Next Batch</a></li>
-			  </ul>
-            </li>				 
-			<li class="treeview">
-              <a href="#"><i class="fa fa-book"></i> QC <span class="pull-right-container">
-                  <i class="fa fa-angle-left pull-right"></i>
-				  <span class="label label-primary pull-right">0</span>
-                </span>
-              </a>
-              <ul class="treeview-menu">
-				 <li class=""><a href="GetNextBatch.php?page=Enrich&amp;Task=QC"><i class="fa  fa-hand-grab-o"></i>Get Next Batch</a></li>
-			  </ul>
-            </li>				 
-			<li class="treeview">
-              <a href="#"><i class="fa fa-book"></i> WRITING <span class="pull-right-container">
-                  <i class="fa fa-angle-left pull-right"></i>
-				  <span class="label label-primary pull-right">0</span>
-                </span>
-              </a>
-              <ul class="treeview-menu">
-				 <li class=""><a href="GetNextBatch.php?page=Enrich&amp;Task=WRITING"><i class="fa  fa-hand-grab-o"></i>Get Next Batch</a></li>
-			   </ul>
-            </li>				 
-			<li class="treeview">
-              <a href="#"><i class="fa fa-book"></i> WRITINGQC <span class="pull-right-container">
-                  <i class="fa fa-angle-left pull-right"></i>
-				  <span class="label label-primary pull-right">0</span>
-                </span>
-              </a>
-              <ul class="treeview-menu">
-				 <li class=""><a href="GetNextBatch.php?page=Enrich&amp;Task=WRITINGQC"><i class="fa  fa-hand-grab-o"></i>Get Next Batch</a></li>
-			  </ul>
-            </li> 
-			<li class="treeview">
-              <a href="#"><i class="fa fa-book"></i> FINALREVIEW <span class="pull-right-container">
-                  <i class="fa fa-angle-left pull-right"></i>
-				  <span class="label label-primary pull-right">0</span>
-                </span>
-              </a>
-              <ul class="treeview-menu">
+		  
+			<?php
+				include(APPPATH.'controllers/SidebarMenuController.php'); 
+				$GetData = SidebarMenuController::EnrichMenu();
+				//print_r($GetData);
+			?>
+
+		  
+		   <ul class="treeview-menu">
+		   <?php if (!empty($GetData)): ?>
+		   
+				<?php foreach($GetData as $WorkflowName => $data): ?>
 				
-				 <li class=""><a href="GetNextBatch.php?page=Enrich&amp;Task=FINALREVIEW"><i class="fa  fa-hand-grab-o"></i>Get Next Batch</a></li>
-			  </ul>
-            </li>
-            <li class="treeview">
-              <a href="#"><i class="fa fa-book"></i> Completed
-                <span class="pull-right-container">
-                  <i class="fa fa-angle-left pull-right"></i>
-				  
-                </span>
-              </a>
-              <ul class="treeview-menu">
-				  <li><a href="ListofCompleted.php?page=FINALREVIEW"><i class="fa fa-list-alt"></i>QC Completed <span class="label label-primary pull-right bg-green">0</span></a> </li>
-				  <li><a href="WritingCompleted.php?page=FINALREVIEW"><i class="fa fa-list-alt"></i>Writing Completed <span class="label label-primary pull-right bg-green">0</span></a> </li>
-				</ul>
-            </li>
-          </ul>
+					<?php $WorkflowName_remove_space = preg_replace('/\s+/', '', $WorkflowName); ?>
+					<li id="Child_Menu_<?php echo $WorkflowName_remove_space;?>"  class="treeview" >
+						<a href="#"> 
+							<i class="fa fa-book"></i> 
+							
+							
+							<span> <?php echo $WorkflowName; ?> </span> 
+							<span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
+						</a>
+						<ul class="treeview-menu">
+						
+								<?php foreach($data as  $ProcessCode => $valData ): ?>
+									<li id="Sub_Child_Menu_<?php echo @$ProcessCode;  ?>">
+											 <a href="#">
+												<i class="fa fa-book"></i> 
+												<span> <?php echo @$ProcessCode;  ?> </span>								
+												<span class="pull-right-container">
+													<i class="fa fa-angle-left pull-right"></i>
+													<span class="label label-primary pull-right"><?php echo $valData['countNum'];  ?></span>
+												</span>
+											  </a>
+											  
+											  <ul class="treeview-menu">
+											  
+													<?php if($valData['countNum'] > 0): ?>
+													
+															<?php foreach($valData['data_value'] as $value ): ?>
+																
+																<li class="" id="Second_Sub_Child_Menu_<?php echo $value['RefId'] ?>">
+																	<a href='CodeMirror?RefId=<?php echo $value['RefId'] ?>&BatchID=<?php echo $value['BatchID'] ?>&Task=<?php echo $valData['ProcessCode'] ?>'  >
+																		<i class="fa fa-file-pdf-o"></i>
+																		<span><?php echo $value['JObname'] ?></span>
+																	</a>
+																</li>
+													
+														
+															<?php endforeach; ?>
+											  
+													<?php else: ?>
+													
+														<li class="" id="Second_Sub_Child_Menu_">
+															<a href="javascript:void(0)" class="GetNextbatch" data-ProcessCode="<?php echo $valData['ProcessCode']; ?>" data-WorkFlowId="<?php echo $valData['WorkFlowId'] ?>" >
+																<i class="fa  fa-hand-grab-o"></i>
+																<span>Get Next Batch</span>
+															</a>
+														</li>
+														
+													<?php endif; ?>
+											  </ul>
+	
+											
+									</li>
+								<?php endforeach; ?>
+						
+						</ul>
+					</li>
+				<?php endforeach; ?>
+			
+			
+			<?php endif; ?>
+		   </ul>
+		  
+		  
         </li>
+		
 		<li class="header">SETTINGS</li>
 		
 		<li class="treeview">
@@ -127,10 +162,29 @@
           <a href="#">
              <i class="fa fa-edit"></i>
             <span>Editor Settings</span>
-            
           </a>
           <ul class="treeview-menu">
             <li><a href="EditorSettings"><i class="fa fa-cog"></i> Configure</a></li>
+          </ul>
+        </li>
+		
+		<li class="treeview">
+          <a href="#">
+             <i class="fa f fa-tasks"></i>
+            <span>Task Settings</span>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="TaskSettings"><i class="fa fa-cog"></i> Configure</a></li>
+          </ul>
+        </li>
+		
+		<li class="treeview">
+          <a href="#">
+             <i class="fa fa-user"></i>
+            <span>User Maintenance</span>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="UserList"><i class="fa fa-user-plus"></i> User List</a></li>
           </ul>
         </li>
 		
@@ -179,3 +233,156 @@
     </section>
     <!-- /.sidebar -->
   </aside>
+  
+
+  
+ <script> 
+$(function(){
+	loadMenubar();
+});
+
+function loadMenubar(){	
+	 $.ajax({
+			url 		: "SidebarMenuController/Countmenubar",
+			type		: "POST",
+			dataType	: "JSON",
+			success		: function(data){
+						
+						$(".precoding_count").empty().html(data.countPrecoding);
+						$(".forApproval_count").empty().html(data.countApproval);
+						$(".batching_count").empty().html(data.countApproved);
+						$(".registered_count").empty().html(data.countRegistered);
+						
+						
+						
+			},
+			error: function (jqXHR, textStatus, errorThrown){
+				console.log('Error get data from ajax');
+			}
+    });
+	
+}	
+</script>
+
+<script>
+$(document).on('click','.GetNextbatch',function(){
+	
+	var ProcessCode = $(this).attr('data-ProcessCode');
+	var WorkFlowId = $(this).attr('data-WorkFlowId');
+	
+	$.ajax({
+		url:'<?php echo base_url(); ?>GetNextbatchController/AutoAllocate',
+		type:'post',
+		data:{ProcessCode:ProcessCode,WorkFlowId:WorkFlowId},
+		dataType:'json',
+		beforeSend:function(){
+			 $("body").waitMe({
+				effect: 'timer',
+				text: 'Updating  ........ ',
+				bg: 'rgba(255,255,255,0.90)',
+				color: '#555'
+			}); 
+		},
+		success:function(data){
+			 $('body').waitMe('hide');
+			 
+			 if(data.count > 0  && data.error == false)
+			 {
+				   swal({
+						type:'success',
+						title:"File Allocated"
+					}).then(function(){
+						
+						window.location.href="CodeMirror?RefId="+data.RefId+"&BatchID="+data.BatchID+"&Task="+data.Task;
+							
+					})
+			 }
+			 else if(data.error == true){
+				 
+					swal({
+						type:'error',
+						title:"Oops..",
+						text:data.message
+					})
+					
+					return false;
+			 }
+			 else
+			 {
+				 
+				 swal({
+						type:'error',
+						title:"No File Allocated"
+					})
+				 return false;
+						
+			 }
+			 
+		},
+		 error: function(xhr, status, error){
+			 $('body').waitMe('hide');
+         var errorMessage = xhr.status + ': ' + xhr.statusText
+         alert('Error - ' + errorMessage);
+     }
+		/*
+		error: function(event, jqXHR, ajaxSettings, thrownError) {
+			$('body').waitMe('hide');
+			alert('[event:' + event + '], [jqXHR:' + jqXHR + '], [ajaxSettings:' + ajaxSettings + '], [thrownError:' + thrownError + '])');
+		}
+		/*
+		error:function(){
+			$('body').waitMe('hide');
+			swal({
+				type:'error',
+				title:"Oops..",
+				text:"Internal error "
+			})
+        }
+		*/
+		
+	})
+
+
+});
+</script>
+
+
+<script>
+$(document).ready(function(){
+
+	var Parent_Menu_ = "<?php echo @$Parent_Menu_ ?>";
+	var Child_Menu_ =  "<?php echo @$Child_Menu_ ?>";
+	var Sub_Child_Menu_ =  "<?php echo @$Sub_Child_Menu_ ?>";
+	var Second_Sub_Child_Menu_ =  "<?php echo @$Second_Sub_Child_Menu_ ?>";
+	
+	
+	if(Parent_Menu_ != "")
+	{	
+		$('.sidebar ul li').removeClass('active');
+		$('.sidebar ul li#'+Parent_Menu_).addClass('active');
+	}
+	
+
+	if(Child_Menu_ != "")
+	{	
+		$('.sidebar ul.treeview-menu li').removeClass('active');
+		$('.sidebar ul.treeview-menu li#'+Child_Menu_).addClass('active');
+	}
+	
+	
+	if(Sub_Child_Menu_ != "")
+	{		
+		$('li#'+Child_Menu_+'  ul.treeview-menu li').removeClass('active');
+		$('li#'+Child_Menu_+'  ul.treeview-menu li#'+Sub_Child_Menu_).addClass('active');
+	}
+	
+	if(Second_Sub_Child_Menu_ != "")
+	{		
+		$('li#'+Sub_Child_Menu_+'  ul.treeview-menu li').removeClass('active');
+		$('li#'+Sub_Child_Menu_+'  ul.treeview-menu li#'+Second_Sub_Child_Menu_).addClass('active');
+	}
+	
+	
+	
+});
+</script>

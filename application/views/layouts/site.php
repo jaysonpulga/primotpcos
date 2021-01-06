@@ -53,7 +53,7 @@
 </html>
 
 
-<body class="hold-transition skin-blue sidebar-mini">
+<body class="hold-transition fixed skin-blue sidebar-mini">
 
 <div class="wrapper">
 

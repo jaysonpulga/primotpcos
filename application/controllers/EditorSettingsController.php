@@ -236,7 +236,7 @@ class EditorSettingsController extends CI_Controller
 		 $this->ovewriteCssFile();
 			
 			
-			echo "created";
+		echo "created";
 		
 		
 	}
@@ -280,6 +280,8 @@ class EditorSettingsController extends CI_Controller
 			}
 			
 			$prTExt=$prTExt."span.ATC { text-decoration: underline;text-decoration-color: red; text-decoration-style: wavy;}";
+			
+			
 			file_put_contents("assets/ckeditor/stylesheetparser.css", $prTExt);
 		
 	}

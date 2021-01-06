@@ -29,13 +29,15 @@
 					<div class="col-lg-5">
 						<table width="100%" id='table' border=0 >
 							<tr>
-								<td width="1%"><label for="jurisdiction" class="control-label" >Jurisdiction</label></td>
+								<td width="1%"><label for="jurisdiction" class="control-label" >Status</label></td>
 								<td width="16%" >			
 									<select class="form-control" id="jurisdiction_value" name="jurisdiction_value">
 										 <option value="NEW">NEW</option>
 										 <option value="for Approval">for Approval</option>
 										 <option value="Approved">Approved</option>
-										 <option value="Discarded/Others">Discarded/Others</option>
+										 <option value="Discarded">Discarded</option>
+										 <option value="Others">Others</option>
+										 <option value="Registered">Registered</option>
 								  </select>
 								</td>
 								<td width="1%"><button  class="btn btn-primary x-small pull-right btnsearch"><i class="fa  fa-search"></i> Search</button></td>
@@ -56,9 +58,10 @@
 					  <th>Configname</th>
 					  <th>Jurisdiction</th>
 					  <th>Status</th>
-					  <th>Title</th>
+					   <th>Regulation Number</th>
 					  <th>Filename</th>
 					  <th>Date Registered</th>
+					   <th>Action</th>
 					</tr>
 					</thead>
 					<tbody></tbody>
@@ -103,8 +106,8 @@ function loadTable(){
 	 table =  $('#mainDatatables').DataTable({
 		 
 		'paging'      : true,
-		'lengthChange': false,
-		'searching'   : false,
+		'lengthChange': true,
+		'searching'   : true,
 		'info'        : true,
 		"processing": true, //Feature control the processing indicator.
 		//"serverSide": true,
@@ -121,20 +124,26 @@ function loadTable(){
 			"type"  : "post",
 		},
 		
-		"columnDefs": [ {
-		"targets": [0,1,2,3,4,5],
-		"orderable": false
-		}],
-			
+
 		"bDestroy": true,
 		"columns"    : [
 		{'data': 'RefId'},
 		{'data': 'ConfigName'},
 		{'data': 'Jurisdiction'},
 		{'data': 'Status'},
-		{'data': 'Title'},
+		{'data': 'RegulationNumber'},
 		{'data': 'Filename'},
 		{'data': 'DateRegistered'},
+		{
+		   "data": null,
+		   "mRender": function(data, type, value) {
+			
+	
+					return  '<a href="fullscreen/'+value["RefId"]+'" target="_blank" title="view"><i class="fa fa-fw fa-eye"></i></a>';
+			
+			}
+		
+		}
 		],
 
 		"fnRowCallback": function( nRow, aData, iDisplayIndex) {

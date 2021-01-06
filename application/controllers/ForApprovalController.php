@@ -47,7 +47,7 @@ class ForApprovalController extends CI_Controller
 				foreach($post as $dd) 
 				{
 					
-					$EntryForm = "SELECT * From  tbldataentry_forms WHERE  RefId= '".$dd->RefId."' ";
+										$EntryForm = "SELECT * From  tbldataentry_forms WHERE  RefId= '".$dd->RefId."' ";
 					$query = $this->WMSIdeagenDB->query($EntryForm);
 					$dataform = $query->result();
 					
@@ -63,16 +63,12 @@ class ForApprovalController extends CI_Controller
 						foreach($dataform as $metaifo)
 						{
 							
-							if($metaifo->FieldName == "Sgml")
-							{
-								$SGML_filename = $metaifo->Answer;
-								
-							}
 							
 							if($metaifo->FieldCaption)
 							{
-								$metaDataFieldName .= "<td><b>".$metaifo->FieldCaption."</b></td>";
+								$metaDataFieldName .= "<td><center><b>".$metaifo->FieldCaption."</b></center></td>";
 							}
+						
 							
 							if($metaifo->Answer)
 							{								
@@ -81,7 +77,7 @@ class ForApprovalController extends CI_Controller
 						
 						}
 						
-						$metaDataTable .= "<table border='1'>";
+						$metaDataTable .= "<table class='table table-bordered table-striped' border=1>";
 						$metaDataTable .= "<tr>";
 						$metaDataTable .= $metaDataFieldName;
 						$metaDataTable .= "</tr>";
@@ -102,8 +98,10 @@ class ForApprovalController extends CI_Controller
 					$row['meta_data'] = $metaDataTable;
 					$row['ConfigName'] = @$dd->ConfigName;
 					$row['Jurisdiction'] = @$dd->Jurisdiction;
+					$row['SGML_filename'] = @$dd->SGML_filename;
 					$row['Status'] 		= @$dd->Status;
-					$row['Title'] =  '<a href="fullscreen/'.@$dd->RefId.'" target="_blank">'.$title.'</a>'; 
+					$row['Title'] =  '<a href="fullscreen/'.@$dd->RefId.'" target="_blank">'.$title.'</a>';
+					$row['RegulationNumber'] = @$dd->RegulationNumber;
 					$row['Filename'] = @$dd->Filename;
 					$row['DateRegistered'] = @$dd->DateRegistered;
 					
@@ -147,29 +145,32 @@ class ForApprovalController extends CI_Controller
 		$strSQL = "SELECT * From  primo_view_Integration WHERE IsNull(Relevancy,'')='' AND Status ='for Approval'  ";
 		$query = $this->WMSIdeagenDB->query($strSQL);
 		$data = $query->result();
-		
+
 		
 		$spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
        	$sheet->setCellValue('A1', 'RefId');
-        $sheet->setCellValue('B1', 'MetaData Info.');  
-		$sheet->setCellValue('C1', 'Configname');	
-		$sheet->setCellValue('D1', 'Jurisdiction');
-		$sheet->setCellValue('E1', 'Status');	
+        $sheet->setCellValue('B1', 'MetaData Info.'); 
+		$sheet->setCellValue('C1', 'SGML Filename.'); 		
+		$sheet->setCellValue('D1', 'Configname');	
+		$sheet->setCellValue('E1', 'Jurisdiction');
 		$sheet->setCellValue('F1', 'Title');
 		$sheet->setCellValue('G1', 'Filename');
-		$sheet->setCellValue('H1', 'Date Registered');	
+		$sheet->setCellValue('H1', 'Date Registered');
+		$sheet->setCellValue('I1', 'Status');
+
+
 		
 		
         $rows = 2;
-		$metadataInfo = "";
+		
         foreach ($data as $val){
 			
 			
 					$EntryForm = "SELECT * From  tbldataentry_forms WHERE  RefId= '".$val->RefId."' ";
 					$query = $this->WMSIdeagenDB->query($EntryForm);
 					$dataform = $query->result();
-					
+					$metadataInfo = "";
 					if(!empty($dataform))
 					{
 						foreach($dataform as $metaifo)
@@ -182,15 +183,38 @@ class ForApprovalController extends CI_Controller
 			
             $sheet->setCellValue('A' . $rows, $val->RefId);
             $sheet->setCellValue('B' . $rows, $metadataInfo);
-			$sheet->setCellValue('C' . $rows, $val->ConfigName);
-			$sheet->setCellValue('D' . $rows, $val->Jurisdiction);
-			$sheet->setCellValue('E' . $rows, $val->Status);
+			$sheet->setCellValue('C' . $rows, $val->SGML_filename);
+			$sheet->setCellValue('D' . $rows, $val->ConfigName);
+			$sheet->setCellValue('E' . $rows, $val->Jurisdiction);
 			$sheet->setCellValue('F' . $rows, $val->Title);
 			$sheet->setCellValue('G' . $rows, $val->Filename);
 			$sheet->setCellValue('H' . $rows, $val->DateRegistered);
+			$sheet->setCellValue('I' . $rows, $val->Status);
+			
+			$validation = $rows;
+			
+			$validation= $spreadsheet->getActiveSheet()->getCell('I'.$rows)->getDataValidation();
+			$validation->setType( \PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_LIST );
+			$validation->setErrorStyle( \PhpOffice\PhpSpreadsheet\Cell\DataValidation::STYLE_INFORMATION );
+			$validation->setAllowBlank(false);
+			$validation->setShowInputMessage(true);
+			$validation->setShowErrorMessage(true);
+			$validation->setShowDropDown(true);
+			$validation->setErrorTitle('Input error');
+			$validation->setError('Value is not in list.');
+			$validation->setPromptTitle('Pick from list');
+			$validation->setPrompt('Please pick a value from the drop-down list.');
+			$validation->setFormula1('"Approved,Discarded,Others"');
+			
+
 			
             $rows++;
         } 
+		
+		
+		
+		
+		
 		
 		$currDateTime = date("Y-m-d H:i:s");
 		
@@ -215,14 +239,21 @@ class ForApprovalController extends CI_Controller
 
 		$file_mimes = array('application/vnd.ms-excel', 'application/x-csv', 'text/x-csv', 'text/csv', 'application/csv', 'application/excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 		
+
+		$resultString = "";
+		
 		if(isset($_FILES['upload_file']['name']) && in_array($_FILES['upload_file']['type'], $file_mimes) ) {
+			
 				$arr_file = explode('.', $_FILES['upload_file']['name']);
+				
 				$extension = end($arr_file);
+				
 				if('csv' == $extension){
 					$reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
 				} else {
 					$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
 				}
+				
 				$spreadsheet = $reader->load($_FILES['upload_file']['tmp_name']);
 				$sheetData = $spreadsheet->getActiveSheet()->toArray();
 				
@@ -237,13 +268,16 @@ class ForApprovalController extends CI_Controller
 				
 				if(empty($GetRefIDHeader))
 				{
-					echo "RefId not in field";
+					$res = "RefId not in field";
+					echo json_encode(array('resultStatus'=>'failed','res'=>$res));
 					exit;
 				}
 				else if(!empty($GetRefIDHeader) && $GetRefIDHeader !="RefId"){
 					
-					echo "RefId not in field";
+					$res = "RefId not in field";
+					echo json_encode(array('resultStatus'=>'failed','res'=>$res));
 					exit;
+					
 					
 				}else{
 			
@@ -257,12 +291,13 @@ class ForApprovalController extends CI_Controller
 							//Get and set value from excel
 							$RefId = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(1, $row)->getValue();
 							$MetaDataInfo = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(2, $row)->getValue();
-							$Configname = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(3, $row)->getValue();
-							$Jurisdiction = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(4, $row)->getValue();
-							$Status = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(5, $row)->getValue();
+							$SGML_Filename = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(3, $row)->getValue();
+							$Configname = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(4, $row)->getValue();
+							$Jurisdiction = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(5, $row)->getValue();
 							$Title = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(6, $row)->getValue();
 							$Filename = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(7, $row)->getValue();
 							$DateRegistered = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(8, $row)->getValue();
+							$Status = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(9, $row)->getValue();
 							
 							//Query result if existing the RefID and status is for approval		
 							$EntryForm = "SELECT * From  primo_view_Integration WHERE IsNull(Relevancy,'')='' AND  RefId=".$RefId." AND Status= 'for Approval' ";
@@ -273,7 +308,7 @@ class ForApprovalController extends CI_Controller
 							if($count > 0)
 							{
 									
-									$valid_staus = array('Approved','Discarded/Others');	
+									$valid_staus = array('Approved','Discarded','Others');	
 										
 									if(!empty($Status) && in_array($Status,$valid_staus) )
 									{
@@ -281,31 +316,24 @@ class ForApprovalController extends CI_Controller
 										//update status
 										$strSQL = "UPDATE PRIMO_Integration SET Status ='".$Status."'  where RefId = '".$RefId."' ";
 										$query = $this->WMSIdeagenDB->query($strSQL);
-										echo "updated";
 										
-										/*
-										$data[] = array(
-										  'RefID'  => $RefId,
-										  'MetaDataInfo' => $MetaDataInfo,
-										  'Configname' => $Configname,
-										  'Jurisdiction' => $Jurisdiction,
-										  'Status' => $Status,
-										  'Title' => $Title,
-										  'Filename' => $Filename,
-										  'DateRegistered' => $DateRegistered
-										 );
-										 */
-										 
-									
+										//success updating
+										$resultString .= $RefId. "- <span style='color:green'> Successful Upadate </span> <br>";
+										
+										 							
 									}else{
 										
-										echo "Invalid Status  <br><small>*allow value(Approved and Discarded/Others)</small>";
+										//error updating
+										$resultString .= $RefId. "- <span style='color:red'>Failed to Update (Invalid Status)</span><br>";
 									}
 								
 								
 							}
 							else{
-								echo "No existing RefId in the table";
+								
+								//error updating
+								$resultString .= $RefId. "- <span style='color:red'>No existing RefId in the table</span><br>"; 
+								
 							}
 
 					}// end of for loop
@@ -315,9 +343,14 @@ class ForApprovalController extends CI_Controller
 
 		}
 		else{
-			echo "invalid_file";
+			$res = "<span style='color:red'>Invalid File</span><br>";
+			echo json_encode(array('resultStatus'=>'failed','res'=>$res));
+			exit;
 		}
-			
+		
+
+		echo json_encode(array('resultStatus'=>'success','res'=>$resultString));
+						
 	
 	
    }

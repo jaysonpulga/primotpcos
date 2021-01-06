@@ -25,7 +25,7 @@
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
 	
-	<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/jquery-ui.css">
+  <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/jquery-ui.css">
    <!-- source stable -->
    <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/source/stable/layout-default.css"/>
    
@@ -138,17 +138,13 @@
 		.dropdown:hover .dropbtn {background-color: #3e8e41;}
 	</style>
 	
-	
-	
 
-
-	
 </head>
 <body>
 	
 <!-- Main Header  North -->
 <div class="ui-layout-north" align="left" style="background-color:#21618C">
- <a href="<?php echo base_url(); ?>precoding" class="btn btn-danger">Exit Splitview</a>  
+ <a href="jqavascript:void(0)" class="btn btn-danger exitpreview">Exit Splitview</a>  
 	<div class="pull-right">
 		<img src="<?php echo base_url(); ?>assets/innodata.png"/>
 	 </div>
@@ -158,10 +154,8 @@
 <!-- Main Header  West -->
 <div class="ui-layout-west"> 
 	<div class="ui-layout-content">
-		<div>
-				<div id="editorForm">
-				 <?php echo  @$htmlfile_source  ?>
-				</div>
+		<div id='editContainer'>
+			<div id="editorForm"></div>
 		</div>
 	</div>	
 </div>
@@ -184,11 +178,14 @@
 				<div>
 					<ul class="nav nav-pills nav-stacked">
 						<li><b>TASK: <span id="Task1"></span></b></li>
-						<li> RefID:  <u><span id='JobID'><?php  @$dataresult->RefId ?></span></u> </li>
+						<li> RefID:  <u><span id='JobID'><?php  echo @$dataresult->RefId ?></span></u> </li>
 						<li> ConfigName: <u><span id='JobID'><?php echo @$dataresult->ConfigName ?></span></u> </li>
 						<li> Jurisdiction:  <u><span id='JobID'><?php echo @$dataresult->Jurisdiction ?></span></u> </li>
-						<li> Title:  <u><span id='JobID'><?php echo @$dataresult->Title ?></span></u></li>
-						<li> File name:  <u><span id='filename'><?php echo @$dataresult->Filename ?></span></u> </li>		
+						<li> Regulation Number : <u><span id='JobID'><?php echo @$dataresult->RegulationNumber ?></span></u></li>
+						<li> 
+							File name:  <u><span id='filename'><?php echo @$dataresult->Filename ?></span></u> 
+							<input type="hidden" name="Filename" id="Filename" value="<?php echo pathinfo($dataresult->Filename, PATHINFO_FILENAME); ?>">
+						</li>		
 						<li>Date Registered:  <u><?php echo @$dataresult->DateRegistered ?></u></li>
 						<li>Status:  <u><?php echo @$dataresult->Status ?></u></li>
 					</ul>
@@ -232,16 +229,16 @@
 </html>
 
 
-
-<!-- include  base url js file  -->
-<script type="text/javascript">
-	let baseUrl = "<?= base_url();?>";
-</script>
-
 <!-- define RefID  -->
 <script type="text/javascript">
-	let RefId = '<?php echo @$RefId?>'
+	let baseUrl = "<?= base_url();?>";
+	let RefId = '<?php echo @$RefId?>';
+	let Filename = '<?php echo @$dataresult->Filename ?>';
+	let filepath = '<?php echo @$ckeditorloadfile ?>';
+	let randomCode = '<?php echo rand(1,9999999999999);?>';
+	let ename = '<?php echo $this->session->userdata("EName"); ?>'
 </script>
 
 
-<script src="<?php echo base_url(); ?>customize_file/acquire/fullscreen.js"></script>
+<script src="<?php echo base_url(); ?>customize_file/acquire/fullscreen.js?rand=randomCode"></script>
+<script src="<?php echo base_url(); ?>customize_file/acquire/ckeditor_custom.js?rand=randomCode"></script>

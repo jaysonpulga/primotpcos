@@ -3,7 +3,9 @@ if(!defined('BASEPATH')) exit('No direct script access allowed');
 
 class PrecodingController extends CI_Controller
 {
-
+	
+	private $ProjectName = "primotpcos";
+	
 	function __construct(){
 		
 		parent::__construct();
@@ -54,7 +56,8 @@ class PrecodingController extends CI_Controller
 					$row['ConfigName'] = @$dd->ConfigName;
 					$row['Jurisdiction'] = @$dd->Jurisdiction;
 					$row['Status'] 		= @$dd->Status;
-					$row['Title'] =  '<a href="fullscreen/'.@$dd->RefId.'" target="_blank">'.$this->functions_library->UTF8_encoding(@$dd->Title).'</a>'; 
+					$row['Title'] =  '<a href="fullscreen/'.@$dd->RefId.'" target="_blank">'.$this->functions_library->UTF8_encoding(@$dd->Title).'</a>';
+					$row['RegulationNumber'] = @$dd->RegulationNumber;
 					$row['Filename'] = @$dd->Filename;
 					$row['DateRegistered'] = @$dd->DateRegistered;
 					
@@ -148,30 +151,43 @@ class PrecodingController extends CI_Controller
 	public function fullscreen($RefId)
 	{
 		
-		//$this->convertPDFToHTML();
-
-		
 		//load dataentry model and get loaddDataentry html form 
 		$loaddDataEntry = $this->DataEntrySettings_model->loaddDataEntry();
 		
-		//call loadhtmlfile into ckeditot
-		$htmlfile = $this->loadhtmlfilein_ckeditor();
-
 		//query the RefID details
 		$strSQL = "SELECT * From  primo_view_Integration WHERE IsNull(Relevancy,'')='' AND RefId ='".$RefId."' ";
 		$query = $this->WMSIdeagenDB->query($strSQL);
+		
+		
 	    $result = $query->row();
+		$resultquery = $query->result();
+	
+		if(count($resultquery)==0){
+			echo "RefId nof found";
+			exit;
+		}
+
+		$Filename = @$result->Filename;
+
+		/*** tempory function  create folder and file for testing purpose ***/
+		//$testfilefordocs= pathinfo($result->Filename, PATHINFO_FILENAME);
+		//$Filename = $testfilefordocs.'.doc'; /*sample convert doc to html;*/
+		// for testing create job folder and file
+		$this->functions_library->CreateFolderAndFileforTestingPurpose($result->RefId,$Filename);
+	
 		
 		
 		
-			
+		$file = $this->loadhtmlfilein_ckeditor($RefId,$Filename);
+		
+		
 		$data = array(
 					'dataresult' => $result,
 					'RefId' => $RefId,
 					'dataEntryFormTemplate' => $loaddDataEntry,
-					'htmlfile_source' => $htmlfile);
-		
-		
+					'ckeditorloadfile' => $file,
+					);
+
 		$this->load->view('acquire/precoding_fullscreen',$data);
 		
 	}
@@ -191,47 +207,182 @@ class PrecodingController extends CI_Controller
 	}
 	
 	
+	public function loadhtmlfilein_ckeditor($RefId,$Filename)
+	{	
 	
-	
-	public function convertPDFToHTML(){
 		
+		$output ="";
+	
+	
+		// read file
+		$file = $_SERVER{'DOCUMENT_ROOT'}."/".$this->ProjectName."/uploadfiles/".$RefId."/".$Filename;
+		
+		//get file name
+		$filenameinfo = pathinfo($Filename, PATHINFO_FILENAME);
+		$File_Extension = pathinfo($Filename,PATHINFO_EXTENSION);
+		
+		if(file_exists($file)){
 			
-		$JobId = "22268";
-		$filename="SOR2020-178NewReg";
+				$File_Extension = pathinfo($Filename,PATHINFO_EXTENSION);
+				
+			
+				if($File_Extension == 'pdf' || $File_Extension == 'PDF' )
+				{
+						
+						// read if we have html copy
+						 $gethtml = $_SERVER{'DOCUMENT_ROOT'}."/".$this->ProjectName."/uploadfiles/".$RefId."/".$filenameinfo.'.html';
+				
+						// if file html copy exist get the file 
+						if(file_exists($gethtml)){
+						
+							$output = "uploadfiles/".$RefId."/".$filenameinfo.'.html';
+
+						}
+						else{
+							// convert file 
+							// call function convert pdf to html and get file
+							$this->functions_library->convertPDFToHTML($RefId, $filenameinfo);
+							$output = "uploadfiles/".$RefId."/".$filenameinfo.'.html';
+							
+						}
+
+						
+				}
+				else if($File_Extension == 'html' || $File_Extension == 'HTML' || $File_Extension == 'htm' )
+				{
+						// if file is html get content html
+						$output = "uploadfiles/".$RefId."/".$filenameinfo.'.'.$File_Extension;
+						
+				
+
+				}
+				else if($File_Extension == 'doc' || $File_Extension == 'docx' )
+				{
+					
+						// read if we have html copy
+						$gethtml = $_SERVER{'DOCUMENT_ROOT'}."/".$this->ProjectName."/uploadfiles/".$RefId."/".$filenameinfo.'.html';
+						// if file html copy exist get the file 
+						if(file_exists($gethtml)){
+							$output = "uploadfiles/".$RefId."/".$filenameinfo.'.html';
+						}
+						else{
+							// convert file 
+							// call function convert pdf to html and get file
+							 $this->functions_library->convertDocToHTML($RefId,$Filename);
+							 $output = "uploadfiles/".$RefId."/".$filenameinfo.'.html';
+						
+						}
+				}
+			
+		}
 		
-		$pdf_file =  $_SERVER{'DOCUMENT_ROOT'}."\\primotpcos\\uploadfiles\\".$JobId."\\".pathinfo($filename, PATHINFO_FILENAME).".pdf";
-		$html_dir =  $_SERVER{'DOCUMENT_ROOT'}."\\primotpcos\\uploadfiles\\".$JobId."\\".pathinfo($filename, PATHINFO_FILENAME).".html";
-		 $cmd = "pdftotext $pdf_file $html_dir";
-		
-		$cmd = "mutool convert -o $html_dir $pdf_file";
-		
-		exec($cmd, $out, $ret);
-		
-		exit;
-		
+		return $output; 
+	
 		
 	}
+	
+
 
 	
-	public function loadhtmlfilein_ckeditor()
-	{
+	public function loadhtmlfilein_ckeditor2()
+	{	
+	
+		 $RefId = $this->input->post('RefId');
+		 $Filename = $this->input->post('Filename');
 		
-			$pp = $_SERVER{'DOCUMENT_ROOT'}."/primotpcos/uploadfiles/22268/Reg_of_n_R134_A103_Appendix.html";
+		
+		$output ="";
+	
+	
+		// read file
+		$file = $_SERVER{'DOCUMENT_ROOT'}."/".$this->ProjectName."/uploadfiles/".$RefId."/".$Filename;
+		
+		//get file name
+		$filenameinfo = pathinfo($Filename, PATHINFO_FILENAME);
+		
+		if(file_exists($file)){
 			
-			if(file_exists($pp )){
-			     $sFile= file_get_contents($pp);
-			 
-			   	$encoding = mb_detect_encoding($sFile, mb_detect_order(), false);
+				$File_Extension = pathinfo($Filename,PATHINFO_EXTENSION);
 				
-			    if($encoding == "UTF-8"){
-					$sFile = mb_convert_encoding($sFile, "UTF-8", "Windows-1252");    
-				}
-				
-				return $htmlfile_text = iconv(mb_detect_encoding($sFile, mb_detect_order(), false), "UTF-8//IGNORE", $sFile);
 			
+				if($File_Extension == 'pdf' || $File_Extension == 'PDF' )
+				{
+						
+						// read if we have html copy
+						 $gethtml = $_SERVER{'DOCUMENT_ROOT'}."/".$this->ProjectName."/uploadfiles/".$RefId."/".$filenameinfo.'.html';
 				
-			}
+						// if file html copy exist get the file 
+						if(file_exists($gethtml)){
+							$getfilecontenthtml = file_get_contents($gethtml);
+							//encode
+							$encoding = mb_detect_encoding($getfilecontenthtml, mb_detect_order(), false);
+							if($encoding == "UTF-8"){
+								$getfilecontenthtml = mb_convert_encoding($getfilecontenthtml, "UTF-8", "Windows-1252");    
+							}
+							$output  =  iconv(mb_detect_encoding($getfilecontenthtml, mb_detect_order(), false), "UTF-8//IGNORE", $getfilecontenthtml);
+							
 
+						}
+						else{
+							// convert file 
+							// call function convert pdf to html and get file
+							$convertedfile = $this->functions_library->convertPDFToHTML($RefId, $filenameinfo);
+							//encode 
+							$encoding = mb_detect_encoding($convertedfile, mb_detect_order(), false);
+							if($encoding == "UTF-8"){
+								$convertedfile = mb_convert_encoding($convertedfile, "UTF-8", "Windows-1252");    
+							}
+							$output  = iconv(mb_detect_encoding($convertedfile, mb_detect_order(), false), "UTF-8//IGNORE", $convertedfile);
+						}
+
+						
+				}
+				else if($File_Extension == 'html' || $File_Extension == 'HTML' || $File_Extension == 'htm' )
+				{
+						// if file is html get content html
+						$getfilecontent= file_get_contents($file);
+						$encoding = mb_detect_encoding($getfilecontent, mb_detect_order(), false);
+						if($encoding == "UTF-8"){
+							$getfilecontent = mb_convert_encoding($getfilecontent, "UTF-8", "Windows-1252");    
+						}
+						$output  = iconv(mb_detect_encoding($getfilecontent, mb_detect_order(), false), "UTF-8//IGNORE", $getfilecontent);
+						
+				
+
+				}
+				else if($File_Extension == 'doc' || $File_Extension == 'docx' )
+				{
+					
+						// read if we have html copy
+						$gethtml = $_SERVER{'DOCUMENT_ROOT'}."/".$this->ProjectName."/uploadfiles/".$RefId."/".$filenameinfo.'.html';
+						// if file html copy exist get the file 
+						if(file_exists($gethtml)){
+							$getfilecontenthtml = file_get_contents($gethtml);
+							//encode
+							$encoding = mb_detect_encoding($getfilecontenthtml, mb_detect_order(), false);
+							if($encoding == "UTF-8"){
+								$getfilecontenthtml = mb_convert_encoding($getfilecontenthtml, "UTF-8", "Windows-1252");    
+							}
+							$output  =  iconv(mb_detect_encoding($getfilecontenthtml, mb_detect_order(), false), "UTF-8//IGNORE", $getfilecontenthtml);
+						}
+						else{
+							// convert file 
+							// call function convert pdf to html and get file
+							$convertedfile = $this->functions_library->convertDocToHTML($RefId,$Filename);
+							//encode 
+							$encoding = mb_detect_encoding($convertedfile, mb_detect_order(), false);
+							if($encoding == "UTF-8"){
+								$convertedfile = mb_convert_encoding($convertedfile, "UTF-8", "Windows-1252");    
+							}
+							$output  =  iconv(mb_detect_encoding($convertedfile, mb_detect_order(), false), "UTF-8//IGNORE", $convertedfile);
+						}
+				}
+			
+		}
+		
+		echo $output; 
+	
+		
 	}
 
 	
@@ -242,6 +393,8 @@ class PrecodingController extends CI_Controller
 		$RefId = $this->input->post('RefId'); 
 		$UserID = $this->session->userdata('UserID');
 		$RefIdStatus = $this->input->post('RefIdStatus');
+		$Filename = $this->input->post('Filename');
+		$htmlsource = $this->input->post('htmlsource');
 		
 
 
@@ -262,7 +415,16 @@ class PrecodingController extends CI_Controller
 									
 					$strSQL = "INSERT INTO tbldataentry_forms (Refid,FieldName,FieldType,Answer,UserId,FieldCaption) VALUES ('".$RefId."','".$data_ans['fieldname']."','".$data_ans['fieldtype']."','".$data_ans['answer']."','".$UserID."','".$data_ans['fieldcaption']."')";
 					$query = $this->WMSIdeagenDB->query($strSQL);
+					
+					
+					if($data_ans['fieldname'] == "Sgml"){
+						$strSQL = "UPDATE PRIMO_Integration SET SGML_filename = '".$data_ans['answer']."'  where RefId = '".$RefId."' ";
+						$query = $this->WMSIdeagenDB->query($strSQL);	
+				
+					}
 			}
+			
+
 			
 			
 		}
@@ -270,11 +432,18 @@ class PrecodingController extends CI_Controller
 		
 		
 		//update table if status is New
-		if($RefIdStatus  == "NEW" ||$RefIdStatus  == "New"  )
+		if($RefIdStatus  == "NEW" ||$RefIdStatus  == "New")
 		{
 			$strSQL = "UPDATE PRIMO_Integration SET Status ='for Approval'  where RefId = '".$RefId."' ";
 			$query = $this->WMSIdeagenDB->query($strSQL);
 		}
+		
+		$directory = 'uploadfiles/'.$RefId;
+		$tempDir = $directory."/".$Filename.".html";
+		$tempFile = fopen($tempDir, "w") or die("Unable to open file!");
+		fclose($tempFile);
+		chmod($tempDir, 0777); 
+		file_put_contents($tempDir, $htmlsource);
 		
 		
 		echo "done";
